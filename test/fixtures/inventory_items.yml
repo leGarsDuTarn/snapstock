@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  inventory_report: one
+  product: one
+  is_out_of_stock: false
+
+two:
+  inventory_report: two
+  product: two
+  is_out_of_stock: false
