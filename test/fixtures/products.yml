@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  category: one
+  name: MyString
+  ean: MyString
+  pcb: 1
+
+two:
+  category: two
+  name: MyString
+  ean: MyString
+  pcb: 1
