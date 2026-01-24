@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_24_104737) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_24_110608) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -18,6 +18,17 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_24_104737) do
     t.datetime "created_at", null: false
     t.string "name"
     t.datetime "updated_at", null: false
+  end
+
+  create_table "employees", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "firstname"
+    t.string "lastname"
+    t.string "phone"
+    t.string "role"
+    t.bigint "store_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["store_id"], name: "index_employees_on_store_id"
   end
 
   create_table "inventory_items", force: :cascade do |t|
@@ -45,7 +56,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_24_104737) do
     t.string "lastname"
     t.string "phone"
     t.string "role"
+    t.bigint "store_id"
     t.datetime "updated_at", null: false
+    t.index ["store_id"], name: "index_managers_on_store_id"
   end
 
   create_table "products", force: :cascade do |t|
@@ -64,15 +77,14 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_24_104737) do
     t.string "brand"
     t.string "city"
     t.datetime "created_at", null: false
-    t.bigint "manager_id"
     t.datetime "updated_at", null: false
     t.string "zip_code"
-    t.index ["manager_id"], name: "index_stores_on_manager_id"
   end
 
+  add_foreign_key "employees", "stores"
   add_foreign_key "inventory_items", "inventory_reports"
   add_foreign_key "inventory_items", "products"
   add_foreign_key "inventory_reports", "stores"
+  add_foreign_key "managers", "stores"
   add_foreign_key "products", "categories"
-  add_foreign_key "stores", "managers"
 end
