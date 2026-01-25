@@ -1,0 +1,2 @@
+module InventoryReportsHelper
+end
