@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_25_152144) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_25_155726) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,6 +50,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_25_152144) do
     t.datetime "created_at", null: false
     t.bigint "inventory_report_id", null: false
     t.boolean "is_out_of_stock"
+    t.boolean "missing_label", default: false
     t.bigint "product_id", null: false
     t.datetime "updated_at", null: false
     t.index ["inventory_report_id"], name: "index_inventory_items_on_inventory_report_id"
