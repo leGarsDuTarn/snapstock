@@ -1,16 +1,29 @@
 Rails.application.routes.draw do
-  resource :session, only: [:new, :create, :destroy]
-  resources :passwords, param: :token, only: [:new, :create, :edit, :update]
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  # --- 1. AUTHENTIFICATION ---
+  resource :session, only: %i[new create destroy]
+  resources :passwords, param: :token, only: %i[new create edit update]
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
+  # --- 2. DASHBOARD & RACINE ---
+  # La page d'accueil est le tableau de bord
+  root "dashboards#show"
+  resource :dashboard, only: [ :show ]
 
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  # --- 3. MÉTIER ---
+  resources :stores do
+    # shallow:
+    # - Pour créer : /stores/1/inventory_reports/new (Besoin de l'ID du magasin)
+    # - Pour voir/modifier : /inventory_reports/5 (L'ID du rapport suffit, l'URL est courte)
+    resources :inventory_reports, shallow: true
+    resources :employees, shallow: true
+    resources :managers, shallow: true
+  end
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  # --- 4. DONNÉES DE RÉFÉRENCE ---
+  resources :products
+  resources :brands
+  resources :categories
+
+  # --- 5. PWA (Progressive Web App) ---
+  get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
+  get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 end
