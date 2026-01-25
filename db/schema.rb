@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_25_155726) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_25_160840) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -62,7 +62,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_25_155726) do
     t.date "report_date"
     t.bigint "store_id", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
     t.index ["store_id"], name: "index_inventory_reports_on_store_id"
+    t.index ["user_id"], name: "index_inventory_reports_on_user_id"
   end
 
   create_table "managers", force: :cascade do |t|
@@ -89,6 +91,15 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_25_155726) do
     t.index ["category_id"], name: "index_products_on_category_id"
   end
 
+  create_table "sessions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "ip_address"
+    t.datetime "updated_at", null: false
+    t.string "user_agent"
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
   create_table "store_products", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "product_id", null: false
@@ -109,14 +120,24 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_25_155726) do
     t.index ["brand_id"], name: "index_stores_on_brand_id"
   end
 
+  create_table "users", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email_address", null: false
+    t.string "password_digest", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email_address"], name: "index_users_on_email_address", unique: true
+  end
+
   add_foreign_key "assortments", "brands"
   add_foreign_key "assortments", "products"
   add_foreign_key "employees", "stores"
   add_foreign_key "inventory_items", "inventory_reports"
   add_foreign_key "inventory_items", "products"
   add_foreign_key "inventory_reports", "stores"
+  add_foreign_key "inventory_reports", "users"
   add_foreign_key "managers", "stores"
   add_foreign_key "products", "categories"
+  add_foreign_key "sessions", "users"
   add_foreign_key "store_products", "products"
   add_foreign_key "store_products", "stores"
   add_foreign_key "stores", "brands"
