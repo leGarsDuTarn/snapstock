@@ -18,6 +18,10 @@ class Store < ApplicationRecord
     where("city ILIKE ? OR zip_code LIKE ?", "%#{query}%", "%#{query}%")
   }
   scope :by_brand, ->(brand_id) { where(brand_id: brand_id) }
+  scope :ordered_by_city, -> { order(city: :asc) }
+  scope :search, ->(query) {
+    where("city ILIKE ? OR zip_code LIKE ?", "%#{query}%", "#{query}%")
+  }
 
   private
 
