@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_25_160840) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_26_141843) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -47,6 +47,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_25_160840) do
   end
 
   create_table "inventory_items", force: :cascade do |t|
+    t.integer "cases_added", default: 0, null: false
     t.datetime "created_at", null: false
     t.bigint "inventory_report_id", null: false
     t.boolean "is_out_of_stock"

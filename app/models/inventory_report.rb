@@ -9,4 +9,13 @@ class InventoryReport < ApplicationRecord
   accepts_nested_attributes_for :inventory_items, allow_destroy: true
 
   validates :report_date, presence: true
+  validates :cases_added, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+
+  before_validation :set_default_cases_added
+
+  private
+
+  def set_default_cases_added
+    self.cases_added ||= 0
+  end
 end
