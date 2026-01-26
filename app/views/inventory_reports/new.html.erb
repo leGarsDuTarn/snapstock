@@ -1,2 +1,125 @@
-<h1>InventoryReports#new</h1>
-<p>Find me in app/views/inventory_reports/new.html.erb</p>
+<div class="d-flex align-items-center justify-content-between mb-4 sticky-top bg-body pt-3 pb-2 border-bottom" style="z-index: 1000;">
+  <div>
+    <h1 class="h4 fw-bold mb-0">Nouveau Relevé</h1>
+    <div class="text-muted small"><%= @store.name %></div>
+  </div>
+  <button type="submit" form="new_inventory_report" class="btn btn-primary shadow fw-bold">
+    <i class="fa-solid fa-check me-2"></i>Valider
+  </button>
+</div>
+
+<%= simple_form_for [@store, @inventory_report], html: { id: "new_inventory_report" } do |f| %>
+
+  <%# Date du rapport %>
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <%= f.input :report_date, label: "Date du passage", html5: true, input_html: { class: "fw-bold" } %>
+    </div>
+  </div>
+
+  <%# LISTE DES PRODUITS %>
+  <div class="card border-0 shadow-sm">
+    <div class="list-group list-group-flush">
+
+      <%# En-tête %>
+      <div class="list-group-item bg-light fw-bold text-muted small text-uppercase d-flex text-center align-items-center">
+        <div style="width: 40%;" class="text-start ps-2">Produit</div>
+        <div style="width: 20%;" class="text-danger" title="Rupture"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div style="width: 20%;" class="text-warning" title="Étiquette manquante"><i class="fa-solid fa-tag"></i>?</div>
+        <div style="width: 20%;" title="Colis ajoutés"><i class="fa-solid fa-box"></i> +</div>
+      </div>
+
+      <%= f.simple_fields_for :inventory_items do |item_form| %>
+        <% product = item_form.object.product %>
+
+        <div class="list-group-item py-3 item-row">
+          <%# ID Caché du produit %>
+          <%= item_form.input :product_id, as: :hidden %>
+
+          <div class="d-flex align-items-center">
+
+            <%# 1. INFO PRODUIT %>
+            <div style="width: 40%;" class="pe-2">
+              <div class="fw-bold text-dark text-truncate"><%= product.name %></div>
+              <div class="small text-muted">
+                <span class="badge bg-light text-secondary border"><%= product.category&.name || "?" %></span>
+                <span class="ms-1 font-monospace">PCB:<%= product.pcb %></span>
+              </div>
+            </div>
+
+            <%# 2. SWITCH RUPTURE %>
+            <div style="width: 20%;" class="d-flex justify-content-center border-end">
+              <div class="form-check form-switch form-switch-lg">
+                <%= item_form.check_box :is_out_of_stock, class: "form-check-input rupture-toggle", style: "cursor: pointer;" %>
+              </div>
+            </div>
+
+            <%# 3. SWITCH ETIQUETTE %>
+            <div style="width: 20%;" class="d-flex justify-content-center border-end">
+              <div class="form-check form-switch">
+                <%= item_form.check_box :missing_label, class: "form-check-input border-warning label-toggle", style: "cursor: pointer;" %>
+              </div>
+            </div>
+
+            <%# 4. INPUT COLIS (cases_added) %>
+            <div style="width: 20%;" class="ps-2">
+              <%= item_form.input :cases_added,
+                  label: false,
+                  placeholder: "-",
+                  input_html: { class: "text-center form-control bg-light qty-input fw-bold", type: "number", min: 0 } %>
+            </div>
+
+          </div>
+        </div>
+      <% end %>
+
+    </div>
+  </div>
+<% end %>
+
+<%# JAVASCRIPT : Gestion visuelle des lignes (Rouge si Rupture) %>
+<script>
+  document.addEventListener("turbo:load", function() {
+    const updateRowStyle = (toggle) => {
+      const row = toggle.closest('.list-group-item');
+      const qtyInput = row.querySelector('.qty-input');
+
+      if (toggle.checked) {
+        // Mode RUPTURE
+        row.classList.add('bg-danger-subtle');
+        row.classList.add('border-danger');
+
+        // On désactive la saisie de colis et on met 0
+        qtyInput.value = 0;
+        qtyInput.disabled = true;
+        qtyInput.classList.add('text-muted');
+      } else {
+        // Mode NORMAL
+        row.classList.remove('bg-danger-subtle');
+        row.classList.remove('border-danger');
+
+        qtyInput.disabled = false;
+        qtyInput.classList.remove('text-muted');
+        if(qtyInput.value == 0) qtyInput.value = ""; // On vide si c'était 0
+      }
+    };
+
+    const toggles = document.querySelectorAll('.rupture-toggle');
+    toggles.forEach(toggle => {
+      // Appliquer au chargement (si on revient d'une erreur de validation)
+      updateRowStyle(toggle);
+      // Appliquer au changement
+      toggle.addEventListener('change', (e) => updateRowStyle(e.target));
+    });
+  });
+</script>
+
+<style>
+  /* On grossit les switchs pour le mobile */
+  .form-switch-lg .form-check-input { transform: scale(1.4); margin-left: -2.5em; }
+  .form-check-input:checked { background-color: #0d6efd; border-color: #0d6efd; }
+  /* Couleur spécifique pour le switch Rupture quand coché */
+  .rupture-toggle:checked { background-color: #dc3545; border-color: #dc3545; }
+  /* Couleur spécifique pour le switch Label quand coché */
+  .label-toggle:checked { background-color: #ffc107; border-color: #ffc107; }
+</style>

@@ -1,2 +1,48 @@
-<h1>Products#index</h1>
-<p>Find me in app/views/products/index.html.erb</p>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="h3 fw-bold mb-0">Catalogue Produits</h1>
+  <%= link_to new_product_path, class: "btn btn-primary" do %>
+    <i class="fa-solid fa-plus me-2"></i>Ajouter une référence
+  <% end %>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="bg-light">
+        <tr>
+          <th class="ps-4">Produit</th>
+          <th>Catégorie</th>
+          <th class="text-center">PCB</th>
+          <th class="text-center">Statut</th>
+          <th class="text-end pe-4">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @products.each do |product| %>
+          <tr>
+            <td class="ps-4">
+              <div class="fw-bold text-dark"><%= product.name %></div>
+              <div class="text-muted small font-monospace"><%= product.ean %></div>
+            </td>
+            <td>
+              <span class="badge bg-light text-secondary border">
+                <%= product.category&.name %>
+              </span>
+            </td>
+            <td class="text-center fw-bold text-primary">x<%= product.pcb %></td>
+            <td class="text-center">
+              <% if product.is_innovation %>
+                <span class="badge bg-warning text-dark">Inno</span>
+              <% end %>
+            </td>
+            <td class="text-end pe-4">
+              <%= link_to edit_product_path(product), class: "btn btn-sm btn-light" do %>
+                <i class="fa-solid fa-pen"></i>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

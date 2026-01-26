@@ -1,0 +1,31 @@
+<%= simple_form_for(@product) do |f| %>
+  <div class="card border-0 shadow-sm p-4">
+    <div class="row">
+      <div class="col-md-8">
+        <%= f.input :name, label: "Nom du produit", placeholder: "Ex: Pepsi Max 1.5L" %>
+      </div>
+      <div class="col-md-4">
+        <%= f.input :pcb, label: "PCB (Unités/Colis)", placeholder: "6" %>
+      </div>
+    </div>
+
+    <div class="row mt-3">
+      <div class="col-md-6">
+        <%= f.input :ean, label: "Code EAN (13 chiffres)", placeholder: "32450..." %>
+      </div>
+      <div class="col-md-6">
+        <%= f.association :category, label: "Catégorie / Rayon", prompt: "Choisir..." %>
+      </div>
+    </div>
+
+    <div class="mt-4 p-3 bg-light rounded d-flex gap-4">
+      <%= f.input :is_innovation, label: "C'est une nouveauté ?" %>
+      <%= f.input :is_discontinued, label: "Produit arrêté ?" %>
+    </div>
+
+    <div class="mt-4 d-flex justify-content-end gap-2">
+      <%= link_to "Annuler", products_path, class: "btn btn-light" %>
+      <%= f.button :submit, "Enregistrer", class: "btn-primary" %>
+    </div>
+  </div>
+<% end %>

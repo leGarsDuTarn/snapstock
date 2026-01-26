@@ -1,2 +1,24 @@
-<h1>Categories#new</h1>
-<p>Find me in app/views/categories/new.html.erb</p>
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h4 fw-bold mb-4">Nouveau Rayon / Famille</h1>
+
+        <%= simple_form_for(@category) do |f| %>
+
+          <%= f.input :name,
+                      label: "Nom du rayon",
+                      placeholder: "Ex: Épicerie Sucrée, Liquides...",
+                      input_html: { class: "form-control-lg" },
+                      hint: "Sera utilisé pour trier les produits lors du relevé." %>
+
+          <div class="d-grid gap-2 mt-4">
+            <%= f.button :submit, "Créer le rayon", class: "btn btn-primary btn-lg" %>
+            <%= link_to "Annuler", products_path, class: "btn btn-light" %>
+          </div>
+
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,2 +1,86 @@
-<h1>Products#new</h1>
-<p>Find me in app/views/products/new.html.erb</p>
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+
+    <%# Header %>
+    <div class="d-flex align-items-center mb-4">
+      <%= link_to products_path, class: "btn btn-light btn-sm me-3 shadow-sm rounded-circle", style: "width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" do %>
+        <i class="fa-solid fa-arrow-left"></i>
+      <% end %>
+      <div>
+        <h1 class="h3 fw-bold mb-0">Nouveau Produit</h1>
+        <p class="text-muted small mb-0">Ajouter une référence au catalogue</p>
+      </div>
+    </div>
+
+    <%# Début du Formulaire %>
+    <%= simple_form_for(@product) do |f| %>
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+
+          <%# SECTION 1 : IDENTITÉ %>
+          <h6 class="fw-bold text-uppercase text-primary small mb-3">Identité du produit</h6>
+
+          <%= f.input :name,
+                      label: "Désignation",
+                      placeholder: "Ex: Lipton Pêche 1.5L",
+                      input_html: { class: "form-control-lg fw-bold" } %>
+
+          <div class="row mt-3">
+            <div class="col-md-6">
+              <%= f.input :ean,
+                          label: "Code EAN (Gencod)",
+                          placeholder: "3123456...",
+                          input_html: { class: "font-monospace" },
+                          hint: "Scanner le code-barres si possible" %>
+            </div>
+            <div class="col-md-6">
+              <%# Liste déroulante des Catégories %>
+              <%= f.association :category,
+                  label: "Famille / Rayon",
+                  prompt: "Sélectionner une catégorie...",
+                  input_html: { class: "form-select" } %>
+              <%# Petit lien si la catégorie n'existe pas encore (Optionnel) %>
+              <div class="form-text text-end">
+                Catégorie manquante ?
+                  <%= link_to new_category_path, class: "text-decoration-none fw-bold" do %>
+                    <i class="fa-solid fa-plus-circle small me-1"></i>En créer une
+                  <% end %>
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-4 opacity-25">
+
+          <%# SECTION 2 : LOGISTIQUE %>
+          <h6 class="fw-bold text-uppercase text-primary small mb-3">Logistique & Statut</h6>
+
+          <div class="row align-items-center">
+            <div class="col-6">
+              <%= f.input :pcb,
+                          label: "PCB (Colisage)",
+                          placeholder: "6, 12, 24...",
+                          input_html: { class: "form-control-lg text-center fw-bold", min: 1 },
+                          hint: "Unités par carton" %>
+            </div>
+
+            <div class="col-6">
+              <div class="card bg-light border-0">
+                <div class="card-body py-2">
+                  <%= f.input :is_innovation, label: "Nouveauté", wrapper_html: { class: "mb-2" } %>
+                  <%= f.input :is_discontinued, label: "Produit Arrêté", wrapper_html: { class: "mb-0" } %>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <%# Footer avec Bouton Action %>
+        <div class="card-footer bg-white border-top p-3 d-grid">
+          <%= f.button :submit, "Enregistrer le produit", class: "btn btn-primary btn-lg shadow-sm" %>
+        </div>
+      </div>
+    <% end %>
+
+  </div>
+</div>
