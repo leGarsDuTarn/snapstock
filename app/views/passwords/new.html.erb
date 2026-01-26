@@ -1,8 +1,55 @@
-<h1>Forgot your password?</h1>
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6 col-lg-4">
+    <div class="card shadow-lg border-0 rounded-4">
+      <div class="card-body p-5">
 
-<%= tag.div(flash[:alert], style: "color:red") if flash[:alert] %>
+        <%# En-tête de la carte %>
+        <div class="text-center mb-5">
+          <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow" style="width: 64px; height: 64px;">
+            <i class="fa-solid fa-layer-group fa-2x"></i>
+          </div>
+          <h2 class="fw-bold h3">SnapStock</h2>
+          <p class="text-muted small">Connectez-vous pour commencer</p>
+        </div>
 
-<%= form_with url: passwords_path do |form| %>
-  <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address] %><br>
-  <%= form.submit "Email reset instructions" %>
-<% end %>
+        <%# Formulaire avec Simple Form %>
+        <%= simple_form_for :session, url: session_path do |f| %>
+
+          <%# Champ Email %>
+          <%= f.input :email_address,
+                      label: (content_tag(:i, "", class: "fa-solid fa-envelope me-1") + " Email"),
+                      placeholder: "nom@exemple.com",
+                      required: true,
+                      autofocus: true,
+                      input_html: { class: "form-control-lg bg-light border-0" },
+                      label_html: { class: "fw-semibold" } %>
+
+          <%# Champ Mot de passe %>
+          <div class="mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <%= f.label :password, class: "fw-semibold mb-0" do %>
+                <i class="fa-solid fa-lock me-1"></i> Mot de passe
+              <% end %>
+              <%= link_to "Oublié ?", new_password_path, class: "small text-decoration-none" %>
+            </div>
+            <%= f.input :password,
+                        label: false,
+                        required: true,
+                        input_html: { class: "form-control-lg bg-light border-0" } %>
+          </div>
+
+          <%# Bouton de validation %>
+          <div class="d-grid gap-2 mt-5">
+            <%= f.button :submit, "Se connecter", class: "btn-primary btn-lg shadow-sm fw-bold" %>
+          </div>
+        <% end %>
+
+      </div>
+    </div>
+
+    <%# Footer de page %>
+    <div class="text-center mt-4">
+      <p class="text-muted small">SnapStock v8.2 &copy; <%= Time.current.year %></p>
+    </div>
+  </div>
+</div>
