@@ -1,2 +1,142 @@
-<h1>InventoryReports#show</h1>
-<p>Find me in app/views/inventory_reports/show.html.erb</p>
+<div class="container pb-5">
+
+  <%# 1. EN-TÊTE : Navigation & Identité %>
+  <div class="d-flex align-items-center mb-4">
+    <%= link_to store_path(@store), class: "btn btn-light btn-sm me-3 shadow-sm rounded-circle d-flex align-items-center justify-content-center", style: "width: 40px; height: 40px;" do %>
+      <i class="fa-solid fa-arrow-left"></i>
+    <% end %>
+    <div>
+      <h1 class="h4 fw-bold mb-0">Rapport du <%= l @inventory_report.report_date, format: :long %></h1>
+      <div class="text-muted small">
+        <i class="fa-solid fa-shop me-1"></i><%= @store.name %>
+        <span class="mx-2">•</span>
+        <i class="fa-solid fa-user-circle me-1"></i><%= @inventory_report.user.email_address %>
+      </div>
+    </div>
+  </div>
+
+  <%# 2. TABLEAU DE BORD (KPIs) %>
+  <div class="row g-3 mb-4">
+
+    <%# Carte RUPTURES (Rouge si > 0, Vert sinon) %>
+    <div class="col-4">
+      <div class="card border-0 shadow-sm h-100 <%= @ruptures_count > 0 ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success' %>">
+        <div class="card-body text-center p-2 d-flex flex-column justify-content-center">
+          <div class="fs-2 fw-bold mb-0"><%= @ruptures_count %></div>
+          <div class="x-small fw-bold text-uppercase opacity-75">
+            <i class="fa-solid fa-triangle-exclamation me-1"></i>Ruptures
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# Carte ÉTIQUETTES (Jaune) %>
+    <div class="col-4">
+      <div class="card border-0 shadow-sm h-100 bg-warning-subtle text-warning-emphasis">
+        <div class="card-body text-center p-2 d-flex flex-column justify-content-center">
+          <div class="fs-2 fw-bold mb-0"><%= @labels_count %></div>
+          <div class="x-small fw-bold text-uppercase opacity-75">
+            <i class="fa-solid fa-tag me-1"></i>Étiquettes
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# Carte COLIS (Bleu) %>
+    <div class="col-4">
+      <div class="card border-0 shadow-sm h-100 bg-primary-subtle text-primary">
+        <div class="card-body text-center p-2 d-flex flex-column justify-content-center">
+          <div class="fs-2 fw-bold mb-0"><%= @colis_total %></div>
+          <div class="x-small fw-bold text-uppercase opacity-75">
+            <i class="fa-solid fa-box-open me-1"></i>Colis +
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# 4. LISTE DÉTAILLÉE %>
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-white py-3 border-0">
+      <h5 class="fw-bold mb-0 text-secondary">Détail par produit</h5>
+    </div>
+
+    <div class="list-group list-group-flush">
+      <% @items.each do |item| %>
+
+        <%# Logique de couleur de la ligne %>
+        <% row_class = "" %>
+        <% row_class = "bg-danger-subtle" if item.is_out_of_stock %>
+
+        <div class="list-group-item py-3 <%= row_class %>">
+          <div class="d-flex justify-content-between align-items-center">
+
+            <%# GAUCHE : Infos Produit %>
+            <div class="d-flex align-items-center overflow-hidden">
+              <%# Icône d'état %>
+              <div class="me-3 flex-shrink-0">
+                <% if item.is_out_of_stock %>
+                  <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                    <i class="fa-solid fa-xmark"></i>
+                  </div>
+                <% elsif item.missing_label %>
+                  <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                    <i class="fa-solid fa-exclamation"></i>
+                  </div>
+                <% else %>
+                   <div class="bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                    <i class="fa-solid fa-check"></i>
+                  </div>
+                <% end %>
+              </div>
+
+              <div class="text-truncate">
+                <div class="fw-bold text-dark text-truncate"><%= item.product.name %></div>
+                <div class="small text-muted">
+                  <%= item.product.category&.name %>
+                  <span class="font-monospace ms-1 opacity-75">#<%= item.product.ean %></span>
+                </div>
+              </div>
+            </div>
+
+            <%# DROITE : Badges d'action %>
+            <div class="text-end ps-2 flex-shrink-0">
+
+              <% if item.is_out_of_stock %>
+                <span class="badge bg-danger text-uppercase shadow-sm mb-1">Rupture</span><br>
+              <% end %>
+
+              <% if item.missing_label %>
+                <span class="badge bg-warning text-dark shadow-sm mb-1">Étiquette ?</span><br>
+              <% end %>
+
+              <% if item.cases_added && item.cases_added > 0 %>
+                <span class="badge bg-primary shadow-sm">
+                  +<%= item.cases_added %> colis
+                </span>
+              <% end %>
+
+            </div>
+
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# 5. FOOTER : Zone de danger %>
+  <div class="mt-5 text-center pb-4">
+    <%= link_to inventory_report_path(@inventory_report),
+                data: { turbo_method: :delete, turbo_confirm: "Êtes-vous sûr de vouloir supprimer ce rapport ? Cette action est irréversible." },
+                class: "text-danger small text-decoration-none opacity-75 hover-opacity-100" do %>
+      <i class="fa-solid fa-trash-can me-1"></i>Supprimer ce rapport (Erreur de saisie)
+    <% end %>
+  </div>
+
+</div>
+
+<%# CSS spécifique pour ajuster la taille des textes sur mobile %>
+<style>
+  .x-small { font-size: 0.75rem; }
+  .hover-opacity-100:hover { opacity: 1 !important; }
+</style>

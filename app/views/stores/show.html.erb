@@ -36,6 +36,7 @@
           <% end %>
         </div>
 
+        <%# ACTIONS SECONDAIRES %>
         <div class="row g-2">
           <div class="col-6">
             <%= link_to edit_store_path(@store), class: "btn btn-outline-secondary btn-sm w-100" do %>
@@ -122,7 +123,7 @@
       </div>
     </div>
 
-    <%# 3. CARTE HISTORIQUE %>
+    <%# 3. CARTE HISTORIQUE (Avec Stretched Link) %>
     <div class="card border-0 shadow-sm mb-5">
       <div class="card-header bg-white border-0 pt-4 px-4">
         <h5 class="fw-bold mb-0">Derniers Relevés</h5>
@@ -131,16 +132,36 @@
         <% if @recent_reports.any? %>
           <div class="list-group list-group-flush">
             <% @recent_reports.each do |report| %>
-              <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center">
+
+              <%# ⚠️ IMPORTANT : position-relative ici permet au lien stretched de fonctionner %>
+              <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center position-relative border-bottom border-light">
                 <div>
-                  <div class="fw-bold text-dark">Visite du <%= l report.report_date, format: :long %></div>
-                  <div class="small text-danger">
-                    <i class="fa-solid fa-triangle-exclamation me-1"></i>
-                    <%= report.inventory_items.where(is_out_of_stock: true).count %> ruptures
+                  <div class="fw-bold text-dark">
+                    <%# Le lien invisible qui couvre tout le bloc %>
+                    <%= link_to inventory_report_path(report), class: "text-decoration-none text-dark stretched-link" do %>
+                      Visite du <%= l report.report_date, format: :long %>
+                    <% end %>
                   </div>
+
+                  <%# Calcul des ruptures pour l'affichage conditionnel %>
+                  <% rupture_count = report.inventory_items.where(is_out_of_stock: true).count %>
+
+                  <% if rupture_count > 0 %>
+                    <div class="small text-danger fw-bold">
+                      <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                      <%= rupture_count %> ruptures signalées
+                    </div>
+                  <% else %>
+                    <div class="small text-success">
+                      <i class="fa-solid fa-check-circle me-1"></i>
+                      Aucune rupture (RAS)
+                    </div>
+                  <% end %>
                 </div>
+
                 <i class="fa-solid fa-chevron-right text-muted opacity-50"></i>
               </div>
+
             <% end %>
           </div>
         <% else %>
