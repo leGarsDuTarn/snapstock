@@ -1,6 +1,6 @@
 <div class="row justify-content-center mt-5">
   <div class="col-md-6 col-lg-4">
-    <div class="card shadow-lg border-0 rounded-4">
+    <div class="card shadow-lg border-0 rounded-4 text-dark">
       <div class="card-body p-5">
 
         <div class="text-center mb-5">
@@ -11,7 +11,7 @@
           <p class="text-muted small">Connectez-vous pour commencer</p>
         </div>
 
-        <%# On utilise :session mais on force les noms d'inputs à plat %>
+        <%# Formulaire configuré pour les params à plat de Rails 8 %>
         <%= simple_form_for :session, url: session_path do |f| %>
 
           <%= f.input :email_address,
@@ -31,11 +31,18 @@
           </div>
 
           <div class="d-grid gap-2 mt-5">
-            <%= f.button :submit, "Se connecter", class: "btn-primary btn-lg shadow-sm fw-bold" %>
+            <%= f.button :submit, "Se connecter", class: "btn-primary btn-lg shadow-sm fw-bold mb-2" %>
+
+            <%# Lien vers la création de compte %>
+            <%= link_to "Créer un compte", new_registration_path, class: "btn btn-outline-secondary border-0 btn-sm text-decoration-none" %>
           </div>
         <% end %>
 
       </div>
+    </div>
+
+    <div class="text-center mt-4">
+      <p class="text-muted small">SnapStock v8.2 &copy; <%= Time.current.year %></p>
     </div>
   </div>
 </div>
