@@ -1,2 +1,116 @@
-<h1>Stores#show</h1>
-<p>Find me in app/views/stores/show.html.erb</p>
+<div class="mb-4">
+  <%= link_to stores_path, class: "text-decoration-none text-muted small" do %>
+    <i class="fa-solid fa-arrow-left me-1"></i> Retour à la liste
+  <% end %>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body p-4 text-center">
+        <div class="bg-primary-subtle text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+          <span class="fw-bold h3 mb-0"><%= @store.brand.name[0..1].upcase %></span>
+        </div>
+        <h1 class="h3 fw-bold mb-1"><%= @store.city %></h1>
+        <p class="text-muted mb-4"><%= @store.brand.name %></p>
+
+        <div class="d-grid gap-2">
+          <%= link_to new_store_inventory_report_path(@store), class: "btn btn-primary btn-lg shadow-sm" do %>
+            <i class="fa-solid fa-play me-2"></i> Lancer un Relevé
+          <% end %>
+        </div>
+      </div>
+      <div class="card-footer bg-white border-top border-light p-3">
+        <p class="small text-muted mb-2"><i class="fa-solid fa-map-pin me-2"></i><%= @store.address %>, <%= @store.zip_code %></p>
+        <% if @store.personal_note.present? %>
+          <div class="alert alert-warning border-0 small mb-0">
+            <i class="fa-solid fa-sticky-note me-1"></i> <%= @store.personal_note %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body">
+        <h6 class="fw-bold mb-3">Administration</h6>
+        <div class="d-grid gap-2">
+          <%= link_to edit_store_path(@store), class: "btn btn-outline-secondary btn-sm" do %>
+            <i class="fa-solid fa-pen me-2"></i> Modifier les infos
+          <% end %>
+          <%= button_to store_path(@store), method: :delete, form: { data: { turbo_confirm: "Êtes-vous sûr de vouloir supprimer ce magasin ?" } }, class: "btn btn-outline-danger btn-sm w-100" do %>
+            <i class="fa-solid fa-trash me-2"></i> Supprimer le magasin
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold mb-0">Équipe (<%= @managers.count + @employees.count %>)</h5>
+        <div>
+          <%= link_to new_store_manager_path(@store), class: "btn btn-sm btn-light text-primary me-1" do %>
+            <i class="fa-solid fa-user-tie"></i> +Mgr
+          <% end %>
+          <%= link_to new_store_employee_path(@store), class: "btn btn-sm btn-light text-secondary" do %>
+            <i class="fa-solid fa-user"></i> +Emp
+          <% end %>
+        </div>
+      </div>
+      <div class="card-body px-4">
+        <% if (@managers + @employees).empty? %>
+          <p class="text-muted small fst-italic">Aucun contact enregistré.</p>
+        <% else %>
+          <div class="list-group list-group-flush">
+            <% @managers.each do |manager| %>
+              <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="fw-bold text-dark"><%= manager.firstname %> <%= manager.lastname %></div>
+                  <div class="small text-muted"><span class="badge bg-info-subtle text-info-emphasis me-2">Manager</span> <%= manager.phone %></div>
+                </div>
+                <%= link_to edit_manager_path(manager), class: "btn btn-sm btn-light text-muted" do %><i class="fa-solid fa-pen"></i><% end %>
+              </div>
+            <% end %>
+            <% @employees.each do |employee| %>
+              <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="fw-bold text-dark"><%= employee.firstname %> <%= employee.lastname %></div>
+                  <div class="small text-muted"><span class="badge bg-secondary-subtle text-secondary-emphasis me-2">Employé</span> <%= employee.role %></div>
+                </div>
+                <%= link_to edit_employee_path(employee), class: "btn btn-sm btn-light text-muted" do %><i class="fa-solid fa-pen"></i><% end %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white border-0 pt-4 px-4">
+        <h5 class="fw-bold mb-0">Derniers Relevés</h5>
+      </div>
+      <div class="card-body px-4">
+        <% if @recent_reports.any? %>
+          <div class="list-group list-group-flush">
+            <% @recent_reports.each do |report| %>
+              <%= link_to inventory_report_path(report), class: "list-group-item list-group-item-action px-0 py-3" do %>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <div class="fw-bold text-dark">Relevé du <%= l report.report_date, format: :long %></div>
+                    <div class="small text-muted"><%= pluralize(report.inventory_items.where(is_out_of_stock: true).count, "rupture") %> signalée(s)</div>
+                  </div>
+                  <i class="fa-solid fa-chevron-right text-muted"></i>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="text-muted small">Aucun historique disponible.</p>
+        <% end %>
+      </div>
+    </div>
+
+  </div>
+</div>
