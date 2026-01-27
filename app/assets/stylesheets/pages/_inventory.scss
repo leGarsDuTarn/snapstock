@@ -1,0 +1,17 @@
+// app/assets/stylesheets/_inventory.scss
+
+.form-switch-lg {
+  .form-check-input {
+    transform: scale(1.4);
+    margin-left: -2.5em;
+  }
+}
+.rupture-toggle:checked {
+  background-color: $danger; // Utilise la variable !
+  border-color: $danger;
+}
+
+.label-toggle:checked {
+  background-color: $warning; // Utilise la variable !
+  border-color: $warning;
+}
