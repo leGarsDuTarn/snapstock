@@ -1,3 +1,5 @@
+<%# app/views/inventory_reports/new.html.erb %>
+
 <div class="d-flex align-items-center justify-content-between mb-4 sticky-top bg-body pt-3 pb-2 border-bottom" style="z-index: 1000;">
   <div>
     <h1 class="h4 fw-bold mb-0">Nouveau Relevé</h1>
@@ -17,77 +19,74 @@
     </div>
   </div>
 
-  <%# LISTE DES PRODUITS %>
-  <div class="card border-0 shadow-sm">
-    <div class="list-group list-group-flush">
+  <%# Groupement par catégorie %>
+  <% @inventory_report.inventory_items.group_by { |i| i.product.category&.name || "Autres" }.each_with_index do |(category_name, items), index| %>
+    <% category_id = "category_#{index}" %>
 
-      <%# En-tête %>
-      <div class="list-group-item bg-light fw-bold text-muted small text-uppercase d-flex text-center align-items-center">
-        <div style="width: 40%;" class="text-start ps-2">Produit</div>
-        <div style="width: 20%;" class="text-danger" title="Rupture"><i class="fa-solid fa-triangle-exclamation"></i></div>
-        <div style="width: 20%;" class="text-warning" title="Étiquette manquante"><i class="fa-solid fa-tag"></i>?</div>
-        <div style="width: 20%;" title="Colis ajoutés"><i class="fa-solid fa-box"></i> +</div>
+    <div class="card border-0 shadow-sm mb-3">
+      <%# HEADER DE LA CATEGORIE (CLIQUABLE) %>
+      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2"
+           style="cursor: pointer;"
+           data-bs-toggle="collapse"
+           data-bs-target="#<%= category_id %>">
+        <div class="fw-bold">
+          <span class="small opacity-75 me-2">Catégories</span>
+          <span class="text-uppercase"><%= category_name %></span>
+        </div>
+        <i class="fa-solid fa-chevron-down"></i>
       </div>
 
-      <%= f.simple_fields_for :inventory_items do |item_form| %>
-        <% product = item_form.object.product %>
+      <%# CONTENU PLIABLE %>
+      <div class="collapse show" id="<%= category_id %>">
+        <div class="list-group list-group-flush">
 
-        <%# ICI : On attache le controller Stimulus à la ligne %>
-        <div class="list-group-item py-3 item-row" data-controller="inventory-row">
-
-          <%# ID Caché du produit %>
-          <%= item_form.input :product_id, as: :hidden %>
-
-          <div class="d-flex align-items-center">
-
-            <%# 1. INFO PRODUIT %>
-            <div style="width: 40%;" class="pe-2">
-              <div class="fw-bold text-dark text-truncate"><%= product.name %></div>
-              <div class="small text-muted">
-                <span class="badge bg-light text-secondary border"><%= product.category&.name || "?" %></span>
-                <span class="ms-1 font-monospace">PCB:<%= product.pcb %></span>
-              </div>
-            </div>
-
-            <%# 2. SWITCH RUPTURE (Action Stimulus) %>
-            <div style="width: 20%;" class="d-flex justify-content-center border-end">
-              <div class="form-check form-switch form-switch-lg">
-                <%= item_form.check_box :is_out_of_stock,
-                    class: "form-check-input rupture-toggle",
-                    style: "cursor: pointer;",
-                    data: {
-                      inventory_row_target: "rupture",
-                      action: "change->inventory-row#toggleRupture"
-                    } %>
-              </div>
-            </div>
-
-            <%# 3. SWITCH ETIQUETTE %>
-            <div style="width: 20%;" class="d-flex justify-content-center border-end">
-              <div class="form-check form-switch">
-                <%= item_form.check_box :missing_label,
-                    class: "form-check-input border-warning label-toggle",
-                    style: "cursor: pointer;" %>
-              </div>
-            </div>
-
-            <%# 4. INPUT COLIS (Cible Stimulus) %>
-            <div style="width: 20%;" class="ps-2">
-              <%= item_form.input :cases_added,
-                  label: false,
-                  placeholder: "-",
-                  input_html: {
-                    class: "text-center form-control bg-light qty-input fw-bold",
-                    type: "number",
-                    min: 0,
-                    data: { inventory_row_target: "quantity" }
-                  } %>
-            </div>
-
+          <%# En-tête des colonnes (répété par catégorie pour plus de clarté sur mobile) %>
+          <div class="list-group-item bg-light fw-bold text-muted small text-uppercase d-flex text-center align-items-center py-1">
+            <div style="width: 40%;" class="text-start ps-2">Produit</div>
+            <div style="width: 20%;" class="text-danger"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div style="width: 20%;" class="text-warning"><i class="fa-solid fa-tag"></i></div>
+            <div style="width: 20%;"><i class="fa-solid fa-box"></i></div>
           </div>
-        </div>
-      <% end %>
 
+          <%= f.simple_fields_for :inventory_items, items do |item_form| %>
+            <% product = item_form.object.product %>
+
+            <div class="list-group-item py-3 item-row" data-controller="inventory-row">
+              <%= item_form.input :product_id, as: :hidden %>
+              <div class="d-flex align-items-center">
+
+                <%# 1. INFO PRODUIT %>
+                <div style="width: 40%;" class="pe-2">
+                  <div class="fw-bold text-dark lh-sm mb-0" style="font-size: 0.9rem;"><%= product.name %></div>
+                  <div class="small text-muted font-monospace" style="font-size: 0.75rem;">PCB: <%= product.pcb %></div>
+                </div>
+
+                <%# 2. RUPTURE %>
+                <div style="width: 20%;" class="d-flex justify-content-center border-end">
+                  <div class="form-check form-switch form-switch-lg">
+                    <%= item_form.check_box :is_out_of_stock,
+                        class: "form-check-input rupture-toggle",
+                        data: { inventory_row_target: "rupture", action: "change->inventory-row#toggleRupture" } %>
+                  </div>
+                </div>
+
+                <%# 3. ETIQUETTE %>
+                <div style="width: 20%;" class="d-flex justify-content-center border-end">
+                  <div class="form-check form-switch">
+                    <%= item_form.check_box :missing_label, class: "form-check-input border-warning label-toggle" %>
+                  </div>
+                </div>
+
+                <%# 4. QUANTITÉ %>
+                <div style="width: 20%;" class="ps-2">
+                  <%= item_form.input :cases_added, label: false, placeholder: "-",
+                      input_html: { class: "text-center form-control form-control-sm bg-light fw-bold", data: { inventory_row_target: "quantity" } } %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
     </div>
-  </div>
+  <% end %>
 <% end %>

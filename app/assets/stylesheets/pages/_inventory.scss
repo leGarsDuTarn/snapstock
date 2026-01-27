@@ -15,3 +15,20 @@
   background-color: $warning; // Utilise la variable !
   border-color: $warning;
 }
+ // Faire tourner la flèche quand le menu est fermé
+.card-header[aria-expanded="false"] .fa-chevron-down {
+  transform: rotate(-90deg);
+  transition: transform 0.2s;
+}
+
+.card-header[aria-expanded="true"] .fa-chevron-down {
+  transform: rotate(0deg);
+  transition: transform 0.2s;
+}
+
+// Optionnel: rendre le titre de catégorie collant sous le header principal
+.card-header {
+  position: sticky;
+  top: 65px; // Ajuster selon la hauteur de ta top-bar
+  z-index: 900;
+}
