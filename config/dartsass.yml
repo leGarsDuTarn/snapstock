@@ -1,0 +1,5 @@
+builds:
+  application.scss: application.css
+
+load_paths:
+  - node_modules
