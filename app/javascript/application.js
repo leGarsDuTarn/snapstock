@@ -8,4 +8,4 @@ import "controllers";
 
 // 3. Charge Popper et Bootstrap (pour ton accordéon et tes dropdowns)
 import "@popperjs/core";
-import "bootstrap";
+import * as bootstrap from "bootstrap";

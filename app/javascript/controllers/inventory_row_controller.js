@@ -5,8 +5,6 @@ export default class extends Controller {
   static targets = ["rupture", "quantity"];
 
   connect() {
-    // On appelle la fonction au chargement pour gérer l'état initial
-    // (par exemple si on revient d'une erreur de validation)
     this.toggleRupture();
   }
 
@@ -19,24 +17,26 @@ export default class extends Controller {
   }
 
   setOutOfStockState() {
-    // Ajout des styles visuels sur la ligne (this.element = le conteneur du controller)
+    // Ajoute un fond rouge léger et bordure rouge sur toute la ligne
     this.element.classList.add("bg-danger-subtle", "border-danger");
 
-    // Désactivation de l'input quantité
+    // Gère l'input quantité
     this.quantityTarget.value = 0;
     this.quantityTarget.disabled = true;
-    this.quantityTarget.classList.add("text-muted");
+    this.quantityTarget.classList.add("text-muted", "bg-secondary-subtle");
+    this.quantityTarget.classList.remove("bg-light", "fw-bold");
   }
 
   setNormalState() {
-    // Retrait des styles visuels
+    // Retire les styles d'alerte
     this.element.classList.remove("bg-danger-subtle", "border-danger");
 
-    // Réactivation de l'input
+    // Réactive l'input
     this.quantityTarget.disabled = false;
-    this.quantityTarget.classList.remove("text-muted");
+    this.quantityTarget.classList.remove("text-muted", "bg-secondary-subtle");
+    this.quantityTarget.classList.add("bg-light", "fw-bold");
 
-    // UX: Si la valeur est 0, on la vide pour laisser la place à la saisie
+    // UX : Si c'est 0, on vide pour faciliter la saisie
     if (this.quantityTarget.value == "0") {
       this.quantityTarget.value = "";
     }
