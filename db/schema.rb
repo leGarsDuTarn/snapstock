@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_26_151930) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_29_175348) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -18,9 +18,11 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_26_151930) do
     t.bigint "brand_id", null: false
     t.datetime "created_at", null: false
     t.bigint "product_id", null: false
+    t.bigint "stratum_id"
     t.datetime "updated_at", null: false
     t.index ["brand_id"], name: "index_assortments_on_brand_id"
     t.index ["product_id"], name: "index_assortments_on_product_id"
+    t.index ["stratum_id"], name: "index_assortments_on_stratum_id"
   end
 
   create_table "brands", force: :cascade do |t|
@@ -117,9 +119,20 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_26_151930) do
     t.datetime "created_at", null: false
     t.string "name"
     t.text "personal_note"
+    t.bigint "stratum_id"
     t.datetime "updated_at", null: false
     t.string "zip_code"
     t.index ["brand_id"], name: "index_stores_on_brand_id"
+    t.index ["stratum_id"], name: "index_stores_on_stratum_id"
+  end
+
+  create_table "strata", force: :cascade do |t|
+    t.bigint "brand_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.integer "rank", null: false
+    t.datetime "updated_at", null: false
+    t.index ["brand_id"], name: "index_strata_on_brand_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -132,6 +145,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_26_151930) do
 
   add_foreign_key "assortments", "brands"
   add_foreign_key "assortments", "products"
+  add_foreign_key "assortments", "strata"
   add_foreign_key "employees", "stores"
   add_foreign_key "inventory_items", "inventory_reports"
   add_foreign_key "inventory_items", "products"
@@ -143,4 +157,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_26_151930) do
   add_foreign_key "store_products", "products"
   add_foreign_key "store_products", "stores"
   add_foreign_key "stores", "brands"
+  add_foreign_key "stores", "strata"
+  add_foreign_key "strata", "brands"
 end
