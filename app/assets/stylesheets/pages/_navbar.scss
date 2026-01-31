@@ -1,3 +1,8 @@
+body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f8f9fa;
+      }
+
  .navbar-brand {
   letter-spacing: -0.5px;
 }
@@ -6,71 +11,65 @@
   border: none;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
 }
-body {
-        font-family: 'Inter', sans-serif;
-        background-color: #f8f9fa;
-      }
+/* --- NAVBAR CUSTOM --- */
+.navbar-custom {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  background-color: #0d6efd; /* Bleu Primary */
+}
 
-      /* --- NAVBAR CUSTOM --- */
-      .navbar-custom {
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-        background-color: #0d6efd; /* Bleu Primary */
-      }
+.navbar-brand {
+  font-size: 1.5rem; /* Logo plus gros */
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
 
-      .navbar-brand {
-        font-size: 1.5rem; /* Logo plus gros */
-        font-weight: 800;
-        letter-spacing: -0.5px;
-      }
-
-      /* GROS LIENS DE NAVIGATION */
-      .nav-link-custom {
-        color: rgba(255, 255, 255, 0.9) !important;
-        font-weight: 600;
-        font-size: 1.1rem; /* Texte plus gros */
-        padding: 12px 20px !important; /* GROSSE ZONE DE CLIC */
-        border-radius: 8px;
-        transition: all 0.2s ease;
-        margin-right: 5px;
-      }
+.nav-link-custom {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 600;
+  font-size: 1.1rem; /* Texte plus gros */
+  padding: 12px 20px !important; /* GROSSE ZONE DE CLIC */
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  margin-right: 5px;
+}
 
       /* Effet au survol (Hover) */
-      .nav-link-custom:hover, .nav-link-custom:focus {
-        background-color: rgba(255, 255, 255, 0.2);
-        color: #fff !important;
-        transform: translateY(-1px);
-      }
+.nav-link-custom:hover, .nav-link-custom:focus {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff !important;
+  transform: translateY(-1px);
+}
 
-      /* Lien Actif */
-      .nav-link-custom.active {
-        background-color: rgba(255, 255, 255, 0.25);
-        color: #fff !important;
-      }
+/* Lien Actif */
+.nav-link-custom.active {
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #fff !important;
+}
 
-      /* --- DROPDOWNS AÉRÉS --- */
-      .dropdown-menu-custom {
-        border: none;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        border-radius: 12px;
-        padding: 10px;
-        min-width: 250px; /* Plus large */
-      }
+/* --- DROPDOWNS AÉRÉS --- */
+.dropdown-menu-custom {
+  border: none;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  padding: 10px;
+  min-width: 250px; /* Plus large */
+}
 
-      .dropdown-item-custom {
-        padding: 12px 15px; /* Items bien hauts pour cliquer facile */
-        font-weight: 500;
-        border-radius: 6px;
-        margin-bottom: 2px;
-        font-size: 1rem;
-      }
+.dropdown-item-custom {
+  padding: 12px 15px; /* Items bien hauts pour cliquer facile */
+  font-weight: 500;
+  border-radius: 6px;
+  margin-bottom: 2px;
+  font-size: 1rem;
+}
 
-      .dropdown-item-custom:hover {
-        background-color: #e9ecef;
-        color: #0d6efd; /* Devient bleu au survol */
-      }
+.dropdown-item-custom:hover {
+  background-color: #e9ecef;
+  color: #0d6efd; /* Devient bleu au survol */
+}
 
-      .dropdown-item-custom i {
-        width: 25px; /* Alignement icônes */
-        text-align: center;
-      }
+.dropdown-item-custom i {
+  width: 25px; /* Alignement icônes */
+  text-align: center;
+}
