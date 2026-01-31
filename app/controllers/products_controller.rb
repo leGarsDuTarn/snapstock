@@ -4,23 +4,27 @@ class ProductsController < ApplicationController
   def index
     @products = Product.includes(:category).ordered
 
-    # Recherche simple
     if params[:query].present?
       @products = @products.search(params[:query])
     end
   end
 
   def show
+    @assortments = @product.assortments.includes(:brand, :stratum)
   end
 
   def new
     @product = Product.new
   end
 
+  def edit
+  end
+
   def create
     @product = Product.new(product_params)
+
     if @product.save
-      redirect_to products_path, notice: "Produit créé.", status: :see_other
+      redirect_to products_path, notice: "Fiche produit créée avec succès.", status: :see_other
     else
       render :new, status: :unprocessable_entity
     end
@@ -28,7 +32,7 @@ class ProductsController < ApplicationController
 
   def update
     if @product.update(product_params)
-      redirect_to products_path, notice: "Produit modifié.", status: :see_other
+      redirect_to products_path, notice: "Fiche produit mise à jour.", status: :see_other
     else
       render :edit, status: :unprocessable_entity
     end
@@ -36,7 +40,7 @@ class ProductsController < ApplicationController
 
   def destroy
     @product.destroy
-    redirect_to products_path, notice: "Produit supprimé.", status: :see_other
+    redirect_to products_path, notice: "Produit supprimé définitivement.", status: :see_other
   end
 
   private
@@ -45,7 +49,6 @@ class ProductsController < ApplicationController
     end
 
     def product_params
-      # brand_ids: [] permet de gérer les cases à cocher "Enseignes"
-      params.require(:product).permit(:name, :ean, :pcb, :category_id, :is_innovation, :is_discontinued, brand_ids: [])
+      params.require(:product).permit(:name, :ean, :pcb, :category_id, :is_innovation, :is_discontinued)
     end
 end
