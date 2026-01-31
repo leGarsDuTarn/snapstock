@@ -1,82 +1,69 @@
 class InventoryReportsController < ApplicationController
-  # Charge le magasin pour les actions dépendantes du contexte store
   before_action :set_store, only: %i[index new create]
-
-  # Charge le rapport d’inventaire pour les actions ciblées
   before_action :set_inventory_report, only: %i[show destroy]
 
-  # GET /stores/:store_id/inventory_reports
   def index
     @inventory_reports = @store.inventory_reports.order(report_date: :desc)
   end
 
-  # GET /stores/:store_id/inventory_reports/new
   def new
-    # Initialise un nouveau rapport d’inventaire rattaché au magasin
     @inventory_report = @store.inventory_reports.new(report_date: Date.today)
 
-    # Chargement du catalogue produit actif
-    # Inclut les produits sans catégorie pour garantir l’exhaustivité
-    products = Product.where(is_discontinued: false)
-                      .left_joins(:category)
-                      .order("categories.name ASC NULLS FIRST, products.name ASC")
+    # 1. Tentative de chargement via l'assortiment (L'entonnoir)
+    products = []
+    if @store.stratum
+      products = Product.joins(:assortments)
+                        .where(assortments: { brand_id: @store.brand_id })
+                        .where("assortments.stratum_id IN (?)",
+                               @store.brand.strata.where("rank >= ?", @store.stratum.rank).pluck(:id))
+                        .includes(:category)
+    end
 
-    # Génération en mémoire d’une ligne d’inventaire par produit
+    # 2. Sécurité : Si l'assortiment est vide, on charge tout le catalogue actif
+    if products.empty?
+      products = Product.where(is_discontinued: false).includes(:category)
+    end
+
+    # 3. Tri par catégorie puis nom
+    products = products.sort_by { |p| [p.category&.name || "Autres", p.name] }
+
+    # 4. Construction des lignes
     products.each do |product|
       @inventory_report.inventory_items.build(product: product)
     end
   end
 
-  # POST /stores/:store_id/inventory_reports
   def create
     @inventory_report = @store.inventory_reports.new(inventory_report_params)
-    @inventory_report.user = Current.user
+    @inventory_report.user_id = current_user.id # On s'assure de l'ID du user
+    @inventory_report.store = @store
 
     if @inventory_report.save
-      # Redirection conforme aux exigences Turbo après création
-      redirect_to store_path(@store),
-                  notice: "Relevé validé avec succès.",
-                  status: :see_other
+      redirect_to store_path(@store), notice: "Relevé validé avec succès.", status: :see_other
     else
-      # Ré-association des produits pour éviter les erreurs d’affichage du formulaire
-      @inventory_report.inventory_items.each do |item|
-        item.product ||= Product.find_by(id: item.product_id)
-      end
-
-      # Rendu du formulaire avec erreurs de validation
+      @inventory_report.inventory_items.each { |item| item.product ||= Product.find_by(id: item.product_id) }
       render :new, status: :unprocessable_entity
     end
   end
 
-  # GET /inventory_reports/:id
   def show
     @store = @inventory_report.store
-
-    # Récupération et tri des lignes d’inventaire
     @items = @inventory_report.inventory_items
                               .joins(:product)
                               .includes(product: :category)
-                              .order(
-                                is_out_of_stock: :desc,
-                                missing_label: :desc,
-                              )
+                              .order(is_out_of_stock: :desc, no_shelf_space: :desc, missing_label: :desc)
                               .order("products.name ASC")
 
-    # Indicateurs clés
     @ruptures_count = @items.count(&:is_out_of_stock)
+    @missing_count  = @items.count(&:no_shelf_space) # On compte no_shelf_space pour les manquants
     @labels_count   = @items.count(&:missing_label)
     @colis_total    = @items.sum { |item| item.cases_added.to_i }
   end
 
-  # DELETE /inventory_reports/:id
   def destroy
     store = @inventory_report.store
     @inventory_report.destroy
-
-    # Redirection conforme aux exigences Turbo après suppression
-    redirect_to store_path(store),
-                notice: "Rapport supprimé définitivement.",
-                status: :see_other
+    redirect_to store_path(store), notice: "Rapport supprimé.", status: :see_other
   end
 
   private
@@ -92,11 +79,11 @@ class InventoryReportsController < ApplicationController
   def inventory_report_params
     params.require(:inventory_report).permit(
       :report_date,
-      :notes,
       inventory_items_attributes: [
         :id,
         :product_id,
         :is_out_of_stock,
+        :no_shelf_space, # C'est notre "Manquant"
         :missing_label,
         :cases_added
       ]

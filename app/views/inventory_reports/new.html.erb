@@ -1,113 +1,140 @@
-<%# app/views/inventory_reports/new.html.erb %>
-
-<div class="d-flex align-items-center justify-content-between mb-4 sticky-top bg-body pt-3 pb-2 border-bottom" style="z-index: 1000;">
-  <div>
-    <h1 class="h4 fw-bold mb-0">Nouveau Relevé</h1>
-    <div class="text-muted small"><%= @store.name %></div>
-  </div>
-  <button type="submit" form="new_inventory_report" class="btn btn-primary shadow fw-bold">
-    <i class="fa-solid fa-check me-2"></i>Valider
-  </button>
-</div>
-
-<%= simple_form_for [@store, @inventory_report], html: { id: "new_inventory_report" } do |f| %>
-
-  <%# Date du rapport %>
-  <div class="card border-0 shadow-sm mb-4">
-    <div class="card-body">
-      <%= f.input :report_date, label: "Date du passage", html5: true, input_html: { class: "fw-bold" } %>
+<div class="container py-3 mb-5 pb-5">
+  <%# En-tête fixe léger %>
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="h4 fw-bold mb-0">Nouveau Relevé</h1>
+      <div class="text-muted small"><%= @store.name %> • <span class="badge bg-light text-dark border"><%= @store.stratum&.name || "Sans Strate" %></span></div>
     </div>
   </div>
 
-  <%# Groupement par catégorie %>
-  <% groups = @inventory_report.inventory_items.group_by { |i| i.product.category&.name || "Autres" } %>
+  <%= simple_form_for [@store, @inventory_report], html: { id: "new_inventory_report" } do |f| %>
+    <%= f.hidden_field :report_date %>
 
-  <%# Accordéon Bootstrap %>
-  <div class="accordion" id="categoriesAccordion">
-    <% groups.each_with_index do |(category_name, items), index| %>
-      <% collapse_id = "collapse-cat-#{index}" %>
-      <% heading_id = "heading-cat-#{index}" %>
+    <%# Groupement par catégorie %>
+    <% groups = @inventory_report.inventory_items.group_by { |i| i.product.category&.name || "Autres" } %>
 
-      <div class="accordion-item border-0 shadow-sm mb-3">
-        <%# HEADER DE LA CATEGORIE %>
-        <h2 class="accordion-header" id="<%= heading_id %>">
-          <button class="accordion-button bg-primary text-white fw-bold <%= 'collapsed' unless index == 0 %>"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#<%= collapse_id %>"
-                  aria-expanded="<%= index == 0 ? 'true' : 'false' %>"
-                  aria-controls="<%= collapse_id %>">
-            <span class="small opacity-75 me-2">Catégorie</span>
-            <span class="text-uppercase"><%= category_name %></span>
-          </button>
-        </h2>
+    <div class="accordion mb-5" id="categoriesAccordion">
+      <% groups.each_with_index do |(category_name, items), index| %>
+        <div class="accordion-item border-0 shadow-sm mb-3">
+          <h2 class="accordion-header">
+            <button class="accordion-button bg-dark text-white fw-bold py-2 <%= 'collapsed' unless index == 0 %>"
+                    type="button" data-bs-toggle="collapse" data-bs-target="#cat-<%= index %>">
+              <span class="text-uppercase" style="font-size: 0.8rem;"><%= category_name %></span>
+            </button>
+          </h2>
 
-        <%# CONTENU PLIABLE %>
-        <div id="<%= collapse_id %>"
-             class="accordion-collapse collapse <%= 'show' if index == 0 %>"
-             aria-labelledby="<%= heading_id %>"
-             data-bs-parent="#categoriesAccordion">
-          <div class="accordion-body p-0">
-            <div class="list-group list-group-flush">
+          <div id="cat-<%= index %>" class="accordion-collapse collapse <%= 'show' if index == 0 %>">
+            <div class="accordion-body p-0">
 
-              <%# En-tête des colonnes %>
-              <div class="list-group-item bg-light fw-bold text-muted small text-uppercase d-flex text-center align-items-center py-1">
-                <div style="width: 40%;" class="text-start ps-2">Produit</div>
-                <div style="width: 20%;" class="text-danger"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                <div style="width: 20%;" class="text-warning"><i class="fa-solid fa-tag"></i></div>
-                <div style="width: 20%;"><i class="fa-solid fa-box"></i></div>
+              <%# Titres des colonnes %>
+              <div class="d-flex bg-light text-muted fw-bold p-2 border-bottom" style="font-size: 0.65rem;">
+                <div style="width: 40%;">PRODUIT</div>
+                <div style="width: 45%;" class="text-center">ÉTATS (CLIQUEZ)</div>
+                <div style="width: 15%;" class="text-end">COLIS</div>
               </div>
 
               <%= f.simple_fields_for :inventory_items, items do |item_form| %>
                 <% product = item_form.object.product %>
-
-                <%# La row avec le controller Stimulus %>
-                <div class="list-group-item py-3 item-row" data-controller="inventory-row">
+                <div class="p-2 border-bottom d-flex align-items-center bg-white">
                   <%= item_form.input :product_id, as: :hidden %>
 
-                  <div class="d-flex align-items-center">
+                  <%# 1. NOM PRODUIT %>
+                  <div style="width: 40%;" class="pe-1">
+                    <div class="fw-bold lh-sm mb-1" style="font-size: 0.8rem; color: #2d3436;"><%= product.name %></div>
+                    <div class="text-muted font-monospace" style="font-size: 0.65rem;">EAN: <%= product.ean.last(4) %> | PCB: <%= product.pcb %></div>
+                  </div>
 
-                    <%# 1. INFO PRODUIT %>
-                    <div style="width: 40%;" class="pe-2">
-                      <div class="fw-bold text-dark lh-sm mb-0" style="font-size: 0.9rem;"><%= product.name %></div>
-                      <div class="small text-muted font-monospace" style="font-size: 0.75rem;">PCB: <%= product.pcb %></div>
+                  <%# 2. TOGGLES (BADGES) %>
+                  <div style="width: 45%;" class="d-flex justify-content-around align-items-center">
+
+                    <%# Rupture (Rouge) %>
+                    <div class="text-center">
+                      <%= item_form.check_box :is_out_of_stock, class: "btn-check", id: "oos_#{item_form.index}" %>
+                      <label class="badge border border-danger text-danger rounded-pill p-1 status-badge oos-label" for="oos_<%= item_form.index %>">RUPTURE</label>
                     </div>
 
-                    <%# 2. RUPTURE %>
-                    <div style="width: 20%;" class="d-flex justify-content-center border-end">
-                      <div class="form-check form-switch form-switch-lg">
-                        <%= item_form.check_box :is_out_of_stock,
-                            class: "form-check-input rupture-toggle",
-                            data: {
-                              inventory_row_target: "rupture",
-                              action: "change->inventory-row#toggleRupture"
-                            } %>
-                      </div>
+                    <%# Manquant (Noir - mappé sur no_shelf_space) %>
+                    <div class="text-center">
+                      <%= item_form.check_box :no_shelf_space, class: "btn-check", id: "miss_#{item_form.index}" %>
+                      <label class="badge border border-dark text-dark rounded-pill p-1 status-badge miss-label" for="miss_<%= item_form.index %>">MANQUANT</label>
                     </div>
 
-                    <%# 3. ETIQUETTE %>
-                    <div style="width: 20%;" class="d-flex justify-content-center border-end">
-                      <div class="form-check form-switch">
-                        <%= item_form.check_box :missing_label, class: "form-check-input border-warning label-toggle" %>
-                      </div>
+                    <%# Etiquette (Jaune) %>
+                    <div class="text-center">
+                      <%= item_form.check_box :missing_label, class: "btn-check", id: "lab_#{item_form.index}" %>
+                      <label class="badge border border-warning text-warning rounded-pill p-1 status-badge lab-label" for="lab_<%= item_form.index %>">ÉTIQ.</label>
                     </div>
+                  </div>
 
-                    <%# 4. QUANTITÉ %>
-                    <div style="width: 20%;" class="ps-2">
-                      <%= item_form.input :cases_added, label: false, placeholder: "-",
-                          input_html: {
-                            class: "text-center form-control form-control-sm bg-light fw-bold",
-                            data: { inventory_row_target: "quantity" },
-                            autocomplete: "off"
-                          } %>
-                    </div>
+                  <%# 3. QUANTITÉ (Saisie réduite) %>
+                  <div style="width: 15%;" class="ps-1">
+                    <%= item_form.input :cases_added, label: false,
+                        input_html: {
+                          class: "form-control form-control-sm p-1 text-center fw-bold border-0 bg-light shadow-none",
+                          style: "font-size: 0.9rem;",
+                          inputmode: "numeric",
+                          placeholder: "0"
+                        } %>
                   </div>
                 </div>
               <% end %>
+
             </div>
           </div>
         </div>
+      <% end %>
+    </div>
+
+    <%# BOUTON VALIDER FIXE EN BAS %>
+    <div class="fixed-bottom bg-white border-top p-3 shadow-lg" style="z-index: 1050;">
+      <div class="container p-0">
+        <%= f.button :submit, "VALIDER LE RELEVÉ", class: "btn btn-primary btn-lg w-100 fw-bold py-3 shadow-sm" %>
       </div>
-    <% end %>
-  </div>
-<% end %>
+    </div>
+  <% end %>
+</div>
+
+<style>
+  /* Style pour transformer les labels en boutons cliquables */
+  .status-badge {
+    cursor: pointer;
+    font-size: 0.6rem !important;
+    min-width: 45px;
+    background-color: transparent;
+    transition: all 0.1s ease-in-out;
+  }
+
+  /* Rupture : Rouge */
+  .btn-check:checked + .oos-label {
+    background-color: #dc3545 !important;
+    color: white !important;
+    border-color: #dc3545 !important;
+  }
+
+  /* Manquant : Noir */
+  .btn-check:checked + .miss-label {
+    background-color: #212529 !important;
+    color: white !important;
+    border-color: #212529 !important;
+  }
+
+  /* Etiquette : Jaune */
+  .btn-check:checked + .lab-label {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+    border-color: #ffc107 !important;
+  }
+
+  /* Désactiver l'ombre bleue Bootstrap sur les inputs focus */
+  .form-control:focus {
+    box-shadow: none;
+    background-color: #e9ecef !important;
+  }
+
+  /* On s'assure que l'accordéon ne cache pas le bouton fixe */
+  .accordion-button:not(.collapsed) {
+    background-color: #212529;
+    color: white;
+    box-shadow: none;
+  }
+</style>
