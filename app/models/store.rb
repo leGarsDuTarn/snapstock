@@ -1,7 +1,7 @@
 class Store < ApplicationRecord
   # --- RELATIONS ---
   belongs_to :brand
-  belongs_to :stratum, optional: true 
+  belongs_to :stratum, optional: true
 
   has_many :managers, dependent: :destroy
   has_many :employees, dependent: :destroy

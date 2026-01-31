@@ -2,7 +2,7 @@ class Assortment < ApplicationRecord
   # --- RELATIONS ---
   belongs_to :brand
   belongs_to :product
-  belongs_to :stratum 
+  belongs_to :stratum, optional: true
 
   # --- VALIDATIONS ---
   validates :stratum_id, presence: { message: "doit être sélectionné (H1, H2...)" }
