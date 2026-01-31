@@ -1,5 +1,5 @@
 class BrandsController < ApplicationController
-  before_action :set_brand, only: %i[ show edit update destroy ]
+  before_action :set_brand, only: %i[ show edit update destroy import_assortment process_import ]
 
   def index
     @brands = Brand.all.order(:name)
@@ -36,6 +36,25 @@ class BrandsController < ApplicationController
   def destroy
     @brand.destroy
     redirect_to brands_path, notice: "Enseigne supprimée.", status: :see_other
+  end
+
+  # --- METHODES D'IMPORT CSV ---
+
+  def import_assortment
+  end
+
+  def process_import
+    if params[:file].present?
+      service = ImportAssortmentService.new(@brand, params[:file])
+      report = service.call
+
+      notice = "#{report[:success]} lignes traitées avec succès."
+      notice += " Attention : #{report[:errors].count} erreurs." if report[:errors].any?
+
+      redirect_to brand_path(@brand), notice: notice
+    else
+      redirect_to import_assortment_brand_path(@brand), alert: "Veuillez choisir un fichier."
+    end
   end
 
   private
