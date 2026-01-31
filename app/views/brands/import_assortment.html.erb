@@ -1,0 +1,39 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow border-0">
+        <div class="card-body p-5">
+          <h2 class="fw-bold text-primary mb-4">Importer l'assortiment</h2>
+          <p class="text-muted small mb-4">
+            Sélectionnez le fichier CSV fourni pour mettre à jour les strates de <strong><%= @brand.name %></strong>.
+          </p>
+
+          <%= form_with url: process_import_brand_path(@brand), local: true, multipart: true, class: "simple_form" do |f| %>
+
+            <div class="mb-4 input-group-lg">
+              <%= f.label :file, "Fichier CSV", class: "form-label fw-bold" %>
+              <%= f.file_field :file, class: "form-control", accept: ".csv", required: true %>
+              <div class="form-text text-muted mt-2">Format attendu : EAN;STRATE</div>
+            </div>
+
+            <div class="d-grid gap-2">
+              <%= f.button "Lancer l'import", class: "btn btn-primary btn-lg fw-bold" %>
+              <%= link_to "Annuler", brand_path(@brand), class: "btn btn-link text-muted" %>
+            </div>
+
+          <% end %>
+
+          <hr class="my-4">
+
+          <div class="d-flex align-items-center justify-content-between">
+            <small class="text-muted">Besoin d'aide ?</small>
+            <%= link_to download_template_brand_path(@brand), class: "btn btn-sm btn-outline-secondary" do %>
+              <i class="fa-solid fa-download me-2"></i> Télécharger le modèle
+            <% end %>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

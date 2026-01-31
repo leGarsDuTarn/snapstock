@@ -1,4 +1,3 @@
-<%# Navigation / Retour %>
 <div class="mb-4">
   <%= link_to stores_path, class: "text-decoration-none text-muted small" do %>
     <i class="fa-solid fa-arrow-left me-1"></i> Retour à la liste
@@ -7,6 +6,7 @@
 
 <div class="row g-4">
 
+  <%# --- COLONNE GAUCHE (INFO FIXE) --- %>
   <div class="col-lg-4">
     <div class="card border-0 shadow-sm sticky-top" style="top: 20px; z-index: 10;">
       <div class="card-body p-4 text-center">
@@ -16,11 +16,26 @@
           <span class="fw-bold h3 mb-0"><%= @store.brand.name[0..1].upcase %></span>
         </div>
 
-        <%# Infos Identité regroupées %>
+        <%# Infos Identité %>
         <h1 class="h3 fw-bold mb-1"><%= @store.name %></h1>
-        <div class="text-primary fw-bold small mb-2"><%= @store.brand.name %></div>
+        <div class="text-primary fw-bold mb-2"><%= @store.brand.name %></div>
 
-        <%# Adresse remontée ici %>
+        <%# --- AJOUT : BADGE STRATE --- %>
+        <% if @store.stratum %>
+          <div class="mb-3">
+            <span class="badge bg-info text-dark border shadow-sm px-3 py-2 rounded-pill" title="Niveau d'assortiment : <%= @store.stratum.rank %>">
+              <i class="fa-solid fa-layer-group me-1"></i> <%= @store.stratum.name %>
+            </span>
+          </div>
+        <% else %>
+          <div class="mb-3">
+             <span class="badge bg-light text-muted border px-3 py-2 rounded-pill">
+              <i class="fa-solid fa-ban me-1"></i> Sans strate
+            </span>
+          </div>
+        <% end %>
+
+        <%# Adresse %>
         <p class="text-muted small mb-4">
           <i class="fa-solid fa-location-dot me-1"></i>
           <%= @store.address %><br>
@@ -57,6 +72,7 @@
     </div>
   </div>
 
+  <%# --- COLONNE DROITE (CONTENU) --- %>
   <div class="col-lg-8">
 
     <%# 1. CARTE NOTE STRATÉGIQUE %>
@@ -123,7 +139,7 @@
       </div>
     </div>
 
-    <%# 3. CARTE HISTORIQUE (Avec Stretched Link) %>
+    <%# 3. CARTE HISTORIQUE %>
     <div class="card border-0 shadow-sm mb-5">
       <div class="card-header bg-white border-0 pt-4 px-4">
         <h5 class="fw-bold mb-0">Derniers Relevés</h5>
@@ -133,17 +149,14 @@
           <div class="list-group list-group-flush">
             <% @recent_reports.each do |report| %>
 
-              <%# ⚠️ IMPORTANT : position-relative ici permet au lien stretched de fonctionner %>
               <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center position-relative border-bottom border-light">
                 <div>
                   <div class="fw-bold text-dark">
-                    <%# Le lien invisible qui couvre tout le bloc %>
                     <%= link_to inventory_report_path(report), class: "text-decoration-none text-dark stretched-link" do %>
                       Visite du <%= l report.report_date, format: :long %>
                     <% end %>
                   </div>
 
-                  <%# Calcul des ruptures pour l'affichage conditionnel %>
                   <% rupture_count = report.inventory_items.where(is_out_of_stock: true).count %>
 
                   <% if rupture_count > 0 %>

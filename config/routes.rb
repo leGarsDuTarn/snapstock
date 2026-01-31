@@ -18,6 +18,11 @@ Rails.application.routes.draw do
   # --- 4. CONFIGURATION ENSEIGNES ---
   # Les strates et l'assortiment sont rattachés directement à la marque.
   resources :brands do
+    # Routes pour l'import CSV
+    member do
+      get :import_assortment
+      post :process_import
+    end
     resources :strata, shallow: true
     resources :assortments, shallow: true
   end

@@ -1,6 +1,7 @@
 <%= simple_form_for(@store) do |f| %>
   <div class="form-inputs">
 
+    <%# 1. ENSEIGNE %>
     <%= f.association :brand,
         label: "Enseigne",
         collection: Brand.order(:name),
@@ -8,12 +9,14 @@
         input_html: { class: "form-select-lg" },
         wrapper_html: { class: "mt-3" } %>
 
+    <%# 2. NOM DU POINT DE VENTE %>
     <%= f.input :name,
                 label: "Nom du point de vente",
                 placeholder: "Ex: Les Portes d'Albi, Centre commercial...",
                 input_html: { class: "form-control-lg" },
                 hint: "Donnez un nom unique pour identifier ce magasin facilement." %>
 
+    <%# 3. LOCALISATION %>
     <div class="row mt-3">
       <div class="col-md-8">
         <%= f.input :city, label: "Ville", placeholder: "Ex: Toulouse", input_html: { class: "form-control-lg" } %>
@@ -25,17 +28,38 @@
 
     <%= f.input :address, label: "Adresse complète", placeholder: "12 rue de la République...", wrapper_html: { class: "mt-3" } %>
 
-    <%# 4. Notes %>
+    <%# 4. CONFIGURATION ASSORTIMENT (STRATE) %>
+    <div class="p-4 bg-light border rounded-3 mt-4">
+      <div class="d-flex align-items-center mb-3 text-primary">
+        <i class="fa-solid fa-layer-group me-2 fs-5"></i>
+        <h6 class="fw-bold mb-0">Configuration Assortiment</h6>
+      </div>
+
+      <%# Correction de l'erreur NoMethodError : on groupe par Brand %>
+      <%= f.association :stratum,
+          label: "Strate assignée au magasin",
+          collection: Brand.includes(:strata).order(:name),
+          as: :grouped_select,
+          group_method: :strata,
+          group_label_method: :name,
+          label_method: :name,
+          prompt: "Sélectionnez le niveau d'assortiment...",
+          input_html: { class: "form-select-lg" },
+          hint: "Important : Choisissez la strate correspondant à l'enseigne du magasin." %>
+    </div>
+
+    <%# 5. NOTES %>
     <%= f.input :personal_note,
         label: "Note personnelle (Mémo)",
         placeholder: "Attention au chef de rayon le lundi matin...",
         input_html: { rows: 3 },
-        wrapper_html: { class: "mt-3" },
+        wrapper_html: { class: "mt-4" },
         hint: "Visible uniquement par vous et votre équipe." %>
   </div>
 
+  <%# ACTIONS %>
   <div class="form-actions mt-5 d-grid gap-2 d-md-flex justify-content-md-end border-top pt-4">
-    <%= link_to "Annuler", stores_path, class: "btn btn-light me-md-2" %>
-    <%= f.button :submit, class: "btn-primary btn-lg shadow-sm" %>
+    <%= link_to "Annuler", stores_path, class: "btn btn-light btn-lg px-4 border me-md-2" %>
+    <%= f.button :submit, "Enregistrer le magasin", class: "btn btn-primary btn-lg shadow-sm fw-bold px-4" %>
   </div>
 <% end %>
