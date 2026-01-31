@@ -1,0 +1,25 @@
+<%= form_with(model: brand, class: "contents") do |form| %>
+  <% if brand.errors.any? %>
+    <div id="error_explanation" class="alert alert-danger border-0 shadow-sm mb-4">
+      <h6 class="fw-bold"><%= pluralize(brand.errors.count, "erreur") %> empêche(nt) l'enregistrement :</h6>
+      <ul class="mb-0 small">
+        <% brand.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-4">
+    <%= form.label :name, "Nom de l'enseigne", class: "form-label fw-bold text-secondary mb-1" %>
+    <%= form.text_field :name, class: "form-control form-control-lg border-2", placeholder: "Ex: Auchan, Carrefour, Leclerc...", autofocus: true %>
+    <div class="form-text">Entrez le nom commercial de l'enseigne.</div>
+  </div>
+
+  <%# Tu peux ajouter ici d'autres champs si tu en as (ex: logo, couleur) %>
+
+  <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-5">
+    <%= link_to "Annuler", brands_path, class: "btn btn-light px-4 border" %>
+    <%= form.submit "Enregistrer l'enseigne", class: "btn btn-primary px-4 fw-bold" %>
+  </div>
+<% end %>

@@ -1,2 +1,49 @@
-<h1>Brands#index</h1>
-<p>Find me in app/views/brands/index.html.erb</p>
+<div class="row align-items-center mb-4">
+  <div class="col">
+    <h1 class="h2 fw-800 mb-0"><i class="fa-solid fa-building me-2 text-primary"></i>Enseignes</h1>
+    <p class="text-muted mb-0">Gérez vos différentes enseignes et structures.</p>
+  </div>
+  <div class="col-auto">
+    <%= link_to new_brand_path, class: "btn btn-primary fw-bold shadow-sm" do %>
+      <i class="fa-solid fa-plus me-1"></i> Nouvelle Enseigne
+    <% end %>
+  </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+  <% @brands.each do |brand| %>
+    <div class="col">
+      <div class="card h-100 shadow-sm border-0 hover-shadow transition-all">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center mb-3">
+            <div class="bg-light rounded-3 p-3 text-primary me-3">
+              <i class="fa-solid fa-building fs-3"></i>
+            </div>
+            <div>
+              <h5 class="card-title fw-bold mb-0"><%= brand.name %></h5>
+              <small class="text-muted">
+                <%# Si tu as la relation : %>
+                <%= brand.respond_to?(:strates) ? pluralize(brand.strates.count, "strate") : "Configuration" %>
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <%# --- BOUTONS D'ACTION VISIBLES --- %>
+        <div class="card-footer bg-white border-top p-3 d-flex gap-2">
+          <%= link_to brand_path(brand), class: "btn btn-outline-primary btn-sm flex-grow-1 fw-bold" do %>
+            <i class="fa-solid fa-eye me-1"></i> Voir / Strates
+          <% end %>
+
+          <%= link_to edit_brand_path(brand), class: "btn btn-light btn-sm border text-muted", title: "Modifier" do %>
+            <i class="fa-solid fa-pen"></i>
+          <% end %>
+
+          <%= button_to brand_path(brand), method: :delete, class: "btn btn-light btn-sm border text-danger h-100", form_class: "h-100", title: "Supprimer", data: { turbo_confirm: "Sûr de vouloir supprimer ?" } do %>
+            <i class="fa-solid fa-trash"></i>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

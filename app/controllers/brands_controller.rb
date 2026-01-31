@@ -1,8 +1,12 @@
 class BrandsController < ApplicationController
-  before_action :set_brand, only: %i[ edit update destroy ]
+  before_action :set_brand, only: %i[ show edit update destroy ]
 
   def index
     @brands = Brand.all.order(:name)
+  end
+
+  def show
+    @strata = @brand.strata
   end
 
   def new
