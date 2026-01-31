@@ -1,42 +1,32 @@
-<%= form_with(model: brand.present? ? [brand, stratum] : stratum, class: "contents") do |form| %>
-  <% if stratum.errors.any? %>
-    <div class="alert alert-danger border-0 shadow-sm mb-4">
-      <h6 class="fw-bold"><i class="fa-solid fa-circle-exclamation me-2"></i>Erreurs de validation :</h6>
-      <ul class="mb-0 small">
-        <% stratum.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+<%# Astuce : Si 'brand' est nil (mode edit), Rails gère intelligemment [nil, stratum] comme juste 'stratum' %>
+<%= simple_form_for([brand, stratum]) do |f| %>
 
-  <div class="mb-4">
-    <%= form.label :name, "Nom de la strate (Nomenclature Enseigne)", class: "form-label fw-bold text-secondary mb-1" %>
-    <div class="input-group">
-      <span class="input-group-text bg-white border-2 border-end-0"><i class="fa-solid fa-tag text-primary"></i></span>
-      <%= form.text_field :name, class: "form-control form-control-lg border-2 border-start-0", placeholder: "Ex: H1, H2, Proxi, Drive...", autofocus: true %>
-    </div>
-    <div class="form-text">Exemple : **H1** pour le catalogue complet, **H3** pour le catalogue réduit.</div>
+  <%# Pas besoin de bloc d'erreur manuel, Simple Form colore les champs en rouge tout seul %>
+
+  <div class="form-inputs">
+    <%# CHAMP NOM %>
+    <%= f.input :name,
+                label: "Nom du niveau (Code)",
+                placeholder: "Ex: H1, H2, Proxi...",
+                input_html: { class: "form-control-lg", autofocus: true },
+                label_html: { class: "fw-bold text-secondary small" },
+                hint: "Le code utilisé en interne par l'enseigne." %>
+
+    <%# CHAMP RANG %>
+    <%= f.input :rank,
+                label: "Niveau d'assortiment (Rang)",
+                placeholder: "Ex: 1",
+                input_html: { class: "form-control-lg" },
+                label_html: { class: "fw-bold text-secondary small" },
+                hint: "Logique entonnoir : 1 = Assortiment le plus large (100%)." %>
   </div>
 
-  <div class="mb-4">
-    <%= form.label :rank, "Niveau d'assortiment (Entonnoir)", class: "form-label fw-bold text-secondary mb-1" %>
-    <div class="input-group">
-      <span class="input-group-text bg-white border-2 border-end-0"><i class="fa-solid fa-filter text-muted"></i></span>
-      <%= form.number_field :rank, class: "form-control form-control-lg border-2 border-start-0", placeholder: "Ex: 1" %>
-    </div>
-    <div class="mt-3 p-3 bg-light rounded-3 border">
-      <p class="small mb-0 text-muted">
-        <i class="fa-solid fa-lightbulb text-warning me-2"></i><strong>Logique d'entonnoir :</strong><br>
-        • <strong>Rang 1 :</strong> Full Assortiment (H1 - 100% des produits)<br>
-        • <strong>Rang 2 :</strong> Assortiment Intermédiaire (H2 - ~70%)<br>
-        • <strong>Rang 3 :</strong> Essentiels uniquement (H3 - ~50%)
-      </p>
-    </div>
-  </div>
+  <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-5 border-top pt-4">
+    <%# Pour le bouton Annuler, on doit retrouver l'enseigne parente %>
+    <% parent_brand = brand || stratum.brand %>
 
-  <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-5">
-    <%= link_to "Annuler", brand_path(brand || stratum.brand), class: "btn btn-light px-4 border" %>
-    <%= form.submit "Enregistrer la strate", class: "btn btn-primary px-4 fw-bold" %>
+    <%= link_to "Annuler", brand_path(parent_brand), class: "btn btn-light px-4 border" %>
+
+    <%= f.button :submit, "Enregistrer", class: "btn btn-primary fw-bold px-4" %>
   </div>
 <% end %>

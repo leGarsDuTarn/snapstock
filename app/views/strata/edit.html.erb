@@ -1,22 +1,28 @@
 <div class="row justify-content-center py-4">
-  <div class="col-12 col-lg-6">
+  <div class="col-12 col-md-8 col-lg-6">
+
     <nav aria-label="breadcrumb" class="mb-3">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><%= link_to "Enseignes", brands_path, class: "text-decoration-none" %></li>
         <li class="breadcrumb-item"><%= link_to @stratum.brand.name, brand_path(@stratum.brand), class: "text-decoration-none" %></li>
-        <li class="breadcrumb-item active">Modifier Strate</li>
+        <li class="breadcrumb-item active">Modifier</li>
       </ol>
     </nav>
 
     <div class="card shadow-sm border-0">
       <div class="card-body p-4 p-md-5">
         <div class="mb-4">
-          <h1 class="h3 fw-800 mb-1 text-primary">Modifier la Strate</h1>
-          <p class="text-muted small">Mise à jour de la strate <strong><%= @stratum.name %></strong>.</p>
+          <div class="d-flex align-items-center text-primary mb-2">
+            <i class="fa-solid fa-pen-to-square fs-4 me-2"></i>
+            <h1 class="h3 fw-800 mb-0">Modifier la Strate</h1>
+          </div>
+          <p class="text-muted small">Édition de <strong><%= @stratum.name %></strong></p>
         </div>
 
+        <%# On met brand à nil car on édite directement la strate (shallow) %>
         <%= render "form", stratum: @stratum, brand: nil %>
       </div>
     </div>
+
   </div>
 </div>
