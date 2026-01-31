@@ -10,7 +10,9 @@ class Manager < ApplicationRecord
   # Pour le téléphone, retire tout ce qui n'est pas un chiffre
   normalizes :phone, with: ->(phone) { phone.gsub(/\D/, "") }
 
-  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
+  validates :email,
+            format: { with: URI::MailTo::EMAIL_REGEXP, message: "email invalide" },
+            allow_blank: true
 
   def formatted_phone
     return nil if phone.blank?

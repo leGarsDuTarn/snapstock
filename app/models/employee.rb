@@ -7,6 +7,8 @@ class Employee < ApplicationRecord
   normalizes :phone, with: ->(phone) { phone.gsub(/\D/, "") }
   normalizes :role, with: ->(role) { role.strip.capitalize }
 
+  validates :store_id, presence: { message: "doit être rattaché à un magasin" }
+
   def formatted_phone
     return nil if phone.blank?
     phone.gsub(/(\d{2})(?=\d)/, '\1 ')

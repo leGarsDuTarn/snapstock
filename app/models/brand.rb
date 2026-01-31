@@ -1,10 +1,15 @@
 class Brand < ApplicationRecord
-  has_many :stores
-  has_many :assortments
+  # --- RELATIONS ---
+  has_many :stores, dependent: :destroy
+  has_many :strata, dependent: :destroy
+  has_many :assortments, dependent: :destroy
   has_many :products, through: :assortments
 
-  validates :name, presence: true, uniqueness: { case_sensitive: false }
+  # --- NORMALISATIONS ---
+  normalizes :name, with: ->(name) { name.strip.upcase }
 
-  # Supprime les espaces inutiles et capitalise proprement
-  normalizes :name, with: ->(name) { name.strip.titleize }
+  # --- VALIDATIONS ---
+  validates :name,
+            presence: { message: "est obligatoire" },
+            uniqueness: { case_sensitive: false, message: "existe déjà" }
 end
