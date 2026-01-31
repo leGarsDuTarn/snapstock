@@ -35,8 +35,9 @@ class StrataController < ApplicationController
   # PATCH/PUT /strata/:id
   def update
     if @stratum.update(stratum_params)
-      # redirige vers la liste des strates de l'enseigne parente
-      redirect_to brand_strata_path(@stratum.brand), notice: "Niveau mis à jour."
+      # Redirige vers la page SHOW de l'enseigne parente
+      # C'est là que l'utilisateur verra sa modification dans le tableau
+      redirect_to brand_path(@stratum.brand), notice: "Strate mis à jour.", status: :see_other
     else
       render :edit, status: :unprocessable_entity
     end

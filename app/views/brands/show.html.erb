@@ -34,18 +34,19 @@
         <h5 class="fw-bold mb-0 text-primary">
           <i class="fa-solid fa-layer-group me-2"></i>Strates de l'enseigne
         </h5>
-        <%# On prépare le bouton pour plus tard (Strate est un modèle Stratum) %>
-        <button class="btn btn-sm btn-primary fw-bold rounded-pill px-3">
+
+        <%# BOUTON AJOUTER FONCTIONNEL %>
+        <%= link_to new_brand_stratum_path(@brand), class: "btn btn-sm btn-primary fw-bold rounded-pill px-3" do %>
           <i class="fa-solid fa-plus me-1"></i> Ajouter une Strate
-        </button>
+        <% end %>
       </div>
 
       <div class="list-group list-group-flush">
-        <%# Utilisation du pluriel correct : strata %>
         <% if @brand.strata.any? %>
           <% @brand.strata.order(rank: :asc).each do |stratum| %>
             <div class="list-group-item p-3 d-flex justify-content-between align-items-center hover-bg-light">
               <div class="d-flex align-items-center">
+                <%# Badge du rang %>
                 <div class="badge bg-light text-primary border me-3 flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
                   <%= stratum.rank %>
                 </div>
@@ -54,9 +55,17 @@
                   <div class="small text-muted">Niveau de segmentation</div>
                 </div>
               </div>
+
               <div class="d-flex gap-2">
-                 <button class="btn btn-sm btn-light border" title="Modifier"><i class="fa-solid fa-pen text-secondary"></i></button>
-                 <button class="btn btn-sm btn-light border" title="Supprimer"><i class="fa-solid fa-trash text-danger"></i></button>
+                 <%# BOUTON EDITER (Shallow: pas besoin de @brand) %>
+                 <%= link_to edit_stratum_path(stratum), class: "btn btn-sm btn-light border", title: "Modifier" do %>
+                   <i class="fa-solid fa-pen text-secondary"></i>
+                 <% end %>
+
+                 <%# BOUTON SUPPRIMER (Shallow: pas besoin de @brand) %>
+                 <%= button_to stratum_path(stratum), method: :delete, class: "btn btn-sm btn-light border text-danger", form_class: "d-inline", title: "Supprimer", data: { turbo_confirm: "Êtes-vous sûr de vouloir supprimer la strate #{stratum.name} ?" } do %>
+                   <i class="fa-solid fa-trash"></i>
+                 <% end %>
               </div>
             </div>
           <% end %>
@@ -67,7 +76,7 @@
               <i class="fa-solid fa-layer-group text-muted opacity-25" style="font-size: 3.5rem;"></i>
             </div>
             <h5 class="text-muted">Aucune strate définie</h5>
-            <p class="text-muted small">Les strates permettent de segmenter l'assortiment de vos magasins.</p>
+            <p class="text-muted small">Les strates permettent de segmenter l'assortiment de vos magasins (ex: H1, H2...).</p>
           </div>
         <% end %>
       </div>
