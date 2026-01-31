@@ -9,124 +9,94 @@
     <%= csp_meta_tag %>
     <%= yield :head %>
 
-    <%# --- STYLES --- %>
-    <%# Bootstrap 5 CSS %>
+    <%# --- CSS --- %>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <%# FontAwesome %>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <%# Google Fonts %>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
 
-    <%# --- SCRIPTS --- %>
-    <%# IMPORTANT : Le script Bootstrap est déplacé ici avec 'defer' %>
+    <%# --- SCRIPT (gardé pour le menu mobile, chargé en defer) --- %>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
-
     <%= javascript_importmap_tags %>
   </head>
 
-  <%# Ajout du contrôleur Stimulus 'bootstrap' sur le body %>
-  <body class="d-flex flex-column min-vh-100" data-controller="bootstrap">
+  <body class="d-flex flex-column min-vh-100">
 
-    <%# --- NAVIGATION --- %>
+    <%# --- NAVIGATION CLASSIQUE --- %>
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow sticky-top">
       <div class="container-fluid px-4">
 
-        <%= link_to root_path, class: "navbar-brand d-flex align-items-center me-4" do %>
+        <%# LOGO %>
+        <%= link_to root_path, class: "navbar-brand d-flex align-items-center me-4 fw-bold" do %>
           <i class="fa-solid fa-layer-group me-2"></i> SnapStock
         <% end %>
 
         <% if Current.user %>
-          <button class="navbar-toggler p-3 border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon" style="width: 1.5em; height: 1.5em;"></span>
+          <%# BOUTON MENU MOBILE %>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
           </button>
 
-          <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto align-items-center">
+          <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center">
 
               <%# 1. DASHBOARD %>
               <li class="nav-item">
-                <%= link_to dashboard_path, class: "nav-link nav-link-custom #{'active' if current_page?(dashboard_path) || current_page?(root_path)}" do %>
-                  <i class="fa-solid fa-gauge-high me-2"></i>Dashboard
+                <%= link_to dashboard_path, class: "nav-link px-3 #{'active fw-bold' if current_page?(dashboard_path) || current_page?(root_path)}" do %>
+                  <i class="fa-solid fa-gauge-high me-1"></i> Dashboard
                 <% end %>
               </li>
 
               <%# 2. MAGASINS %>
               <li class="nav-item">
-                <%= link_to stores_path, class: "nav-link nav-link-custom #{'active' if request.path.start_with?('/stores')}" do %>
-                  <i class="fa-solid fa-store me-2"></i>Magasins
+                <%= link_to stores_path, class: "nav-link px-3 #{'active fw-bold' if request.path.start_with?('/stores')}" do %>
+                  <i class="fa-solid fa-store me-1"></i> Magasins
                 <% end %>
               </li>
 
-              <%# 3. CATALOGUE (Dropdown) %>
-              <li class="nav-item dropdown">
-                <a class="nav-link nav-link-custom dropdown-toggle <%= 'active' if request.path.start_with?('/products', '/categories') %>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i class="fa-solid fa-box-open me-2"></i>Catalogue
-                </a>
-                <ul class="dropdown-menu dropdown-menu-custom mt-2">
-                  <li>
-                    <%= link_to products_path, class: "dropdown-item dropdown-item-custom" do %>
-                      <i class="fa-solid fa-list me-2"></i> Liste des Produits
-                    <% end %>
-                  </li>
-                  <li>
-                    <%= link_to new_product_path, class: "dropdown-item dropdown-item-custom" do %>
-                      <i class="fa-solid fa-plus-circle me-2 text-success"></i> Créer Produit
-                    <% end %>
-                  </li>
-                  <li><hr class="dropdown-divider my-2"></li>
-                  <li>
-                    <%= link_to categories_path, class: "dropdown-item dropdown-item-custom" do %>
-                      <i class="fa-solid fa-tags me-2 text-secondary"></i> Gérer les Rayons
-                    <% end %>
-                  </li>
-                </ul>
+              <%# SEPARATEUR VISUEL (Optionnel) %>
+              <li class="nav-item d-none d-lg-block border-start mx-2" style="height: 20px; opacity: 0.3;"></li>
+
+              <%# 3. PRODUITS (Direct) %>
+              <li class="nav-item">
+                <%= link_to products_path, class: "nav-link px-3 #{'active fw-bold' if request.path.start_with?('/products')}" do %>
+                  <i class="fa-solid fa-box-open me-1"></i> Produits
+                <% end %>
               </li>
 
-              <%# 4. STRATÉGIE (Dropdown) %>
-              <li class="nav-item dropdown">
-                <a class="nav-link nav-link-custom dropdown-toggle <%= 'active' if request.path.start_with?('/brands') %>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i class="fa-solid fa-chess me-2"></i>Stratégie
-                </a>
-                <ul class="dropdown-menu dropdown-menu-custom mt-2">
-                  <li>
-                    <%= link_to brands_path, class: "dropdown-item dropdown-item-custom" do %>
-                      <i class="fa-solid fa-building me-2"></i> Enseignes
-                    <% end %>
-                  </li>
-                  <li>
-                    <small class="text-muted px-3 py-1 d-block fw-bold" style="font-size: 0.75rem;">CONFIGURATION</small>
-                  </li>
-                  <li>
-                    <%= link_to brands_path, class: "dropdown-item dropdown-item-custom text-muted" do %>
-                      <i class="fa-solid fa-layer-group me-2"></i> Gérer les Strates
-                    <% end %>
-                  </li>
-                </ul>
+              <%# 4. RAYONS (Direct) %>
+              <li class="nav-item">
+                <%= link_to categories_path, class: "nav-link px-3 #{'active fw-bold' if request.path.start_with?('/categories')}" do %>
+                  <i class="fa-solid fa-tags me-1"></i> Rayons
+                <% end %>
               </li>
+
+              <%# 5. ENSEIGNES (Direct) %>
+              <li class="nav-item">
+                <%= link_to brands_path, class: "nav-link px-3 #{'active fw-bold' if request.path.start_with?('/brands')}" do %>
+                  <i class="fa-solid fa-building me-1"></i> Enseignes
+                <% end %>
+              </li>
+
             </ul>
 
-            <%# PROFILE %>
-            <div class="d-flex align-items-center ms-lg-4 mt-3 mt-lg-0">
-              <div class="dropdown">
-                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle p-2 rounded hover-bg-white-20" data-bs-toggle="dropdown" aria-expanded="false">
-                  <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; font-size: 1.2rem;">
-                    <i class="fa-solid fa-user"></i>
-                  </div>
-                  <div class="d-flex flex-column lh-1 me-2 text-start">
-                    <span class="fw-bold" style="font-size: 0.9rem;"><%= Current.user.display_name %></span>
-                    <span class="text-white-50" style="font-size: 0.75rem;">Connecté</span>
-                  </div>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-custom dropdown-menu-end mt-2">
-                  <li>
-                    <%= button_to session_path, method: :delete, class: "dropdown-item dropdown-item-custom text-danger w-100 text-start" do %>
-                      <i class="fa-solid fa-right-from-bracket me-2"></i> Se déconnecter
-                    <% end %>
-                  </li>
-                </ul>
+            <%# ZONE UTILISATEUR (A droite) %>
+            <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0 pt-3 pt-lg-0 border-top border-lg-0 border-white-50">
+
+              <%# Info User %>
+              <div class="d-flex align-items-center text-white">
+                <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                   <i class="fa-solid fa-user small"></i>
+                </div>
+                <span class="small fw-bold"><%= Current.user.display_name %></span>
               </div>
+
+              <%# Bouton Déconnexion (Direct, pas de dropdown) %>
+              <%= button_to session_path, method: :delete, class: "btn btn-sm btn-outline-light d-flex align-items-center", form_class: "d-inline" do %>
+                <i class="fa-solid fa-power-off me-2"></i> Sortir
+              <% end %>
+
             </div>
           </div>
         <% end %>
@@ -137,10 +107,10 @@
     <main class="container py-4">
       <div id="flash-messages" class="mb-4">
         <% flash.each do |type, message| %>
-          <div class="alert <%= type == 'notice' ? 'alert-success' : 'alert-danger' %> alert-dismissible fade show shadow-sm border-0 py-3" role="alert">
+          <div class="alert <%= type == 'notice' ? 'alert-success' : 'alert-danger' %> alert-dismissible fade show shadow-sm" role="alert">
             <div class="d-flex align-items-center">
-              <i class="fa-solid <%= type == 'notice' ? 'fa-circle-check' : 'fa-triangle-exclamation' %> fs-4 me-3"></i>
-              <span class="fs-6 fw-medium"><%= message %></span>
+              <i class="fa-solid <%= type == 'notice' ? 'fa-circle-check' : 'fa-triangle-exclamation' %> me-2"></i>
+              <span><%= message %></span>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
@@ -151,12 +121,11 @@
     </main>
 
     <%# --- FOOTER --- %>
-    <footer class="bg-white border-top py-4 mt-auto">
+    <footer class="bg-light border-top py-4 mt-auto">
       <div class="container text-center text-muted">
         <small>&copy; <%= Time.current.year %> SnapStock</small>
       </div>
     </footer>
 
-    <%# On a retiré le script du bas car il est maintenant dans le HEAD avec 'defer' %>
   </body>
 </html>
