@@ -1,30 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
   <head>
     <title><%= content_for(:title) || "SnapStock" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta charset="utf-8">
 
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= yield :head %>
 
-    <%# FontAwesome & Bootstrap %>
+    <%# --- STYLES --- %>
+    <%# Bootstrap 5 CSS %>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <%# FontAwesome %>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <%# Google Fonts (Inter pour la modernité) %>
+    <%# Google Fonts %>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
 
+    <%# --- SCRIPTS --- %>
+    <%# IMPORTANT : Le script Bootstrap est déplacé ici avec 'defer' %>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
+
+    <%= javascript_importmap_tags %>
   </head>
 
-  <body class="d-flex flex-column min-vh-100">
+  <%# Ajout du contrôleur Stimulus 'bootstrap' sur le body %>
+  <body class="d-flex flex-column min-vh-100" data-controller="bootstrap">
 
     <%# --- NAVIGATION --- %>
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow sticky-top">
-      <div class="container-fluid px-4"> <%# px-4 pour écarter des bords %>
+      <div class="container-fluid px-4">
 
         <%= link_to root_path, class: "navbar-brand d-flex align-items-center me-4" do %>
           <i class="fa-solid fa-layer-group me-2"></i> SnapStock
@@ -54,7 +61,7 @@
 
               <%# 3. CATALOGUE (Dropdown) %>
               <li class="nav-item dropdown">
-                <a class="nav-link nav-link-custom dropdown-toggle <%= 'active' if request.path.start_with?('/products', '/categories') %>" href="#" role="button" data-bs-toggle="dropdown">
+                <a class="nav-link nav-link-custom dropdown-toggle <%= 'active' if request.path.start_with?('/products', '/categories') %>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="fa-solid fa-box-open me-2"></i>Catalogue
                 </a>
                 <ul class="dropdown-menu dropdown-menu-custom mt-2">
@@ -79,13 +86,13 @@
 
               <%# 4. STRATÉGIE (Dropdown) %>
               <li class="nav-item dropdown">
-                <a class="nav-link nav-link-custom dropdown-toggle <%= 'active' if request.path.start_with?('/brands') %>" href="#" role="button" data-bs-toggle="dropdown">
+                <a class="nav-link nav-link-custom dropdown-toggle <%= 'active' if request.path.start_with?('/brands') %>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="fa-solid fa-chess me-2"></i>Stratégie
                 </a>
                 <ul class="dropdown-menu dropdown-menu-custom mt-2">
                   <li>
                     <%= link_to brands_path, class: "dropdown-item dropdown-item-custom" do %>
-                      <i class="fa-solid fa-building me-2"></i> Enseignes (Auchan...)
+                      <i class="fa-solid fa-building me-2"></i> Enseignes
                     <% end %>
                   </li>
                   <li>
@@ -103,7 +110,7 @@
             <%# PROFILE %>
             <div class="d-flex align-items-center ms-lg-4 mt-3 mt-lg-0">
               <div class="dropdown">
-                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle p-2 rounded hover-bg-white-20" data-bs-toggle="dropdown">
+                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle p-2 rounded hover-bg-white-20" data-bs-toggle="dropdown" aria-expanded="false">
                   <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; font-size: 1.2rem;">
                     <i class="fa-solid fa-user"></i>
                   </div>
@@ -143,13 +150,13 @@
       <%= yield %>
     </main>
 
-    <%# --- FOOTER SIMPLE --- %>
+    <%# --- FOOTER --- %>
     <footer class="bg-white border-top py-4 mt-auto">
       <div class="container text-center text-muted">
         <small>&copy; <%= Time.current.year %> SnapStock</small>
       </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <%# On a retiré le script du bas car il est maintenant dans le HEAD avec 'defer' %>
   </body>
 </html>
